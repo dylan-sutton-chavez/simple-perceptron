@@ -2,7 +2,7 @@
 
 "The earliest predecessors of modern deep learning were simple linear models motivated from a neuroscientific perspective. These models were designed to take a set of `n` input values, and associate them with an output `y`.  These models would learn a set of weights and compute their output" (Goodfellow, Bengio, & Courville, 2016, p. 14).
 
-### 2.1 Decomposition
+### 1.1 Decomposition
 
 1. **Inputs:** Each simple perceptron receive inputs `x` as a vector of values 
 
@@ -49,7 +49,7 @@ $$
 b \leftarrow b + \eta (y - \hat{y})
 $$
 
-### 2.2 Example
+### 1.2 Example
 
 1. **We want to learn:**
 
@@ -133,3 +133,4 @@ $$
       `z = 1·1 + 1·1 – 1 = 1 → ŷ = 1`
 
      Correct classification (1,1 → 1).
+
