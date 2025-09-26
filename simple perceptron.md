@@ -1,9 +1,3 @@
-## 1. Simple Perceptron
-
-Rosenblatt (1958) introduced the perceptron as "the fundamental properties of intelligent systems in general, without becoming too deeply enmeshed in the special, and frequently unknown, conditions which hold for particular biological organisms" (p. 387). 
-
-Building in these original conceptions, the following section formalizes the mathematics of the simple perceptron, clarifying how its structured enables learning and binary decisions.
-
 ## 1. Mathematical Fundamentals 
 
 "The earliest predecessors of modern deep learning were simple linear models motivated from a neuroscientific perspective. These models were designed to take a set of `n` input values, and associate them with an output `y`.  These models would learn a set of weights and compute their output" (Goodfellow, Bengio, & Courville, 2016, p. 14).
@@ -139,31 +133,3 @@ $$
       `z = 1·1 + 1·1 – 1 = 1 → ŷ = 1`
 
      Correct classification (1,1 → 1).
-
-## 3. Perceptron Limitations in Log Analysis
-
-"Linear models have many limitations. Most famously, they cannot learn the XOR function... Critics who observed these flaws in linear models caused a backlash against biologically inspired learning in general" (Goodfellow et al., 2016, p. 14).
-
-This observation note that linear models cannot capture nonlinear relations such as the XOR function. However Cover (1958) showed that by increasing the dimensionality of the representation space, the lineal models can resolver highly complex patterns, creating a lineal separability.
-
-"Thus the probability of separability shows a pronounced threshold effect when the number of patterns is equal to twice the number of dimensions... If the number of patterns is fixed at N and the dimensionality of the space in which the patterns lie is allowed to increase, it follows that the probability... the set of patterns first becomes separable..." (p. 331).
-
-### 3.1 Structure of Core Security Logs
-
-To ensure a structured security log, we can focus into the compliance of the security web applications (OWASP, 2021).
-
-```json
-{
-    "timestamp": string,
-    "source_ip": string,
-    "port": int,
-    "http_method": string,
-    "user_agent": string,
-    "query_params": string,
-    "endpoint": string,
-    "payload_size": float,
-    "response_size": float,
-    "response_time_ms": int
-}
-```
-
