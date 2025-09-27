@@ -11,11 +11,12 @@ $$
 $$
 
 2.  **Weights:** For each input, the perceptron have assigned a weight `w`, that represents *"the importance"* for the decision. The weights represents other vector
-   $$
-   \mathbf{w} = (w_1, w_2, \dots, w_n)
-   $$
+   
+$$
+\mathbf{w} = (w_1, w_2, \dots, w_n)
+$$
 
-3. **Linear Combination:** The first mathematical operation of a perceptron its a lineal combination of inputs and weights
+4. **Linear Combination:** The first mathematical operation of a perceptron its a lineal combination of inputs and weights
 
 $$
 z = \mathbf{w} \cdot \mathbf{x} + b = \sum_{i=1}^n w_i x_i + b
@@ -133,4 +134,5 @@ $$
       `z = 1·1 + 1·1 – 1 = 1 → ŷ = 1`
 
      Correct classification (1,1 → 1).
+
 
