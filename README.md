@@ -200,7 +200,7 @@ Model saved as `simple-perceptron.2025_09_30.json`
  print(prediction)
 ```
 
-2.2.5 Output:
+5. Output:
 
 ```txt
 1
