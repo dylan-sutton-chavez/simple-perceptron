@@ -1,0 +1,6 @@
+[
+    {"features": [0, 0], "label": 0},
+    {"features": [0, 1], "label": 1},
+    {"features": [1, 0], "label": 1},
+    {"features": [1, 1], "label": 1}
+]
