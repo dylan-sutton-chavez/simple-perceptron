@@ -135,4 +135,73 @@ $$
 
      Correct classification (1,1 → 1).
 
+## 2. Simple Perceptron Module
 
+The `SimplePerceptron` module implements a complete cycle of the training and inference for this model, implemented from zero, without external libraries (e.g., NumPy, Sk-learn, PyTorch,...).
+
+### 2.1 Requirements
+
+- Python 3.9+
+
+### 2.2 Usage
+
+1. Create or download `gate-or.json` with all the training date, with this format:
+
+```json
+[
+    {"features": [0, 0], "label": 0},
+    {"features": [0, 1], "label": 1},
+    {"features": [1, 0], "label": 1},
+    {"features": [1, 1], "label": 1}
+]
+```
+
+2. Execute the training model module:
+
+```python
+ # define the model metadata
+ model_info = {
+     'model_name': "Simple Perceptron", 
+     'description': "A simple perceptron trained with the gate `OR`", 
+     'author': "Dylan Sutton Chavez"
+ }
+
+ # initialize the SimplePerceptron class
+ simple_perceptron = SimplePerceptron()
+
+ # train the perceptron with specified parameters
+ simple_perceptron.train(epochs=30, patience=3, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_info=model_info)
+```
+
+3. Output:
+
+```txt
+Epoch 1/30
+    Weights: [-0.01903903, 0.70840468] | Bias: 0.04496653 | Error: 0.5 | Time: 0.0135
+Epoch 2/30
+    Weights: [0.6309609700000001, 0.70840468] | Bias: 0.04496653 | Error: 0.5 | Time: 0.01079999
+Epoch 3/30
+    Weights: [0.6309609700000001, 0.70840468] | Bias: -0.60503347 | Error: 0.25 | Time: 0.0116
+Epoch 4/30
+    Weights: [0.6309609700000001, 0.70840468] | Bias: -0.60503347 | Error: 0.0 | Time: 0.0053
+Epoch 5/30
+    Weights: [0.6309609700000001, 0.70840468] | Bias: -0.60503347 | Error: 0.0 | Time: 0.0035
+Epoch 6/30
+    Weights: [0.6309609700000001, 0.70840468] | Bias: -0.60503347 | Error: 0.0 | Time: 0.0033
+Early Stopping
+Model saved as `simple-perceptron.2025_09_30.json`
+```
+
+4. Yoy can make inference of the trained model with:
+
+```python
+ # load a saved model and make a prediction
+ prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_09_30.json', features=[0, 1])
+ print(prediction)
+```
+
+2.2.5 Output:
+
+```txt
+1
+```
