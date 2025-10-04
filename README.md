@@ -177,26 +177,27 @@ The `SimplePerceptron` module implements a complete cycle of the training and in
 
 ```txt
 Epoch 1/30
-    Weights: [-0.01903903, 0.70840468] | Bias: 0.04496653 | Error: 0.5 | Time: 0.0135
+    Weights: [0.04089614, 0.63768002] | Bias: 0.03646926 | Error: 0.5 | Time: 0.0171
 Epoch 2/30
-    Weights: [0.6309609700000001, 0.70840468] | Bias: 0.04496653 | Error: 0.5 | Time: 0.01079999
+    Weights: [0.69089614, 0.63768002] | Bias: 0.03646926 | Error: 0.5 | Time: 0.0169
 Epoch 3/30
-    Weights: [0.6309609700000001, 0.70840468] | Bias: -0.60503347 | Error: 0.25 | Time: 0.0116
+    Weights: [0.69089614, 0.63768002] | Bias: -0.61353074 | Error: 0.25 | Time: 0.0109
 Epoch 4/30
-    Weights: [0.6309609700000001, 0.70840468] | Bias: -0.60503347 | Error: 0.0 | Time: 0.0053
+    Weights: [0.69089614, 0.63768002] | Bias: -0.61353074 | Error: 0.0 | Time: 0.0133
 Epoch 5/30
-    Weights: [0.6309609700000001, 0.70840468] | Bias: -0.60503347 | Error: 0.0 | Time: 0.0035
+    Weights: [0.69089614, 0.63768002] | Bias: -0.61353074 | Error: 0.0 | Time: 0.0106
 Epoch 6/30
-    Weights: [0.6309609700000001, 0.70840468] | Bias: -0.60503347 | Error: 0.0 | Time: 0.0033
+    Weights: [0.69089614, 0.63768002] | Bias: -0.61353074 | Error: 0.0 | Time: 0.026
 Early Stopping
-Model saved as `simple-perceptron.2025_09_30.json`
+Model saved as `simple-perceptron.2025_10_04.json`
+1
 ```
 
 4. Yoy can make inference of the trained model with:
 
 ```python
  # load a saved model and make a prediction
- prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_09_30.json', features=[0, 1])
+ prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_10_04.json', features=[0, 1])
  print(prediction)
 ```
 

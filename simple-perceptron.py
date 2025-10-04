@@ -61,11 +61,11 @@ class SimplePerceptron:
                 if patience_counter >= patience:
                     print(f"Early Stopping")
 
-                    self._save_model(model_info, epochs, learning_rate, labeled_dataset_path, total_time)
+                    self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time)
                     return
                 
         # if the loop finish without early stopping, save the last epoch model
-        self._save_model(model_info, epochs, learning_rate, labeled_dataset_path, total_time)
+        self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time)
 
     def inference(self, model_path: str, features: list[float]):
         """
