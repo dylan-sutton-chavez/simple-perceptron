@@ -213,5 +213,27 @@ After understanding how the simple perceptron works, you might infer that this m
 
 Basically, the input vector that our simple perceptron receives—just as it can be straightforward in the example where it's learning the `OR` gate—can also be applied to cybersecurity, facial recognition, sentiment analysis, and more. Everything depends on the vector that our simple perceptron receives. Just like in the example where we trained it with inputs like `(1, 1)`, we can train it with, for example, security logs where we vectorize data such as an IP address `(201.48.22.137)`.
 
-Similarly, we can apply functions to the weights `w(c)`, where `c` could be a "memory mechanism" stored in a cache-type database for each user, representing the sensitivity of each user based on their last 100 requests.
+```json
+{
+  "metadata": {
+    "timestamp": "string",
+    "source": {
+      "ip": "string",
+      "port": int
+    }
+  },
+  "http": {
+    "method": "string",
+    "user_agent": "string",
+    "query_params": "string",
+    "endpoint": "string"
+  },
+  "metrics": {
+    "payload_size": float,
+    "response_size": float,
+    "response_time_ms": int
+  }
+}
+```
 
+Similarly, we can apply functions to the weights `w(c)`, where `c` could be a "memory mechanism" stored in a cache-type database for each user, representing the sensitivity of each user based on their last 100 requests.
