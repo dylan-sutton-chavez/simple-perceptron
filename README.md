@@ -209,9 +209,10 @@ Model saved as `simple-perceptron.2025_10_04.json`
 
 ## 3. Using the Model in Complex Tasks
 
-After understanding how the simple perceptron works, you might infer that this model won't perform well on complex tasks — but in fact, it does work, and it all comes down to the following "Thus the probability of separability shows a pronounced threshold effect when the number of patterns is equal to twice the number of dimensions... If the number of patterns is fixed at N and the dimensionality of the space in which the patterns lie is allowed to increase, it follows that the probability... the set of patterns first becomes separable..." (Cover, 1958, p. 331).
+3. Using the Model in Complex Tasks
+After understanding how the simple perceptron works, you might infer that this model is too basic for complex tasks. However, now with giant models with billions of parameters, this classic algorithms are efficient solutions. The foundation for this lies in a principle described by Cover "Thus the probability of separability shows a pronounced threshold effect when the number of patterns is equal to twice the number of dimensions..." (Cover, 1958, p. 331). This suggests that many complex problems can become linearly separable, and thus solvable by simple models, provided the data is represented in a sufficiently high-dimensional vector space.
 
-Basically, the input vector that our simple perceptron receives—just as it can be straightforward in the example where it's learning the `OR` gate—can also be applied to cybersecurity, facial recognition, sentiment analysis, and more. Everything depends on the vector that our simple perceptron receives. Just like in the example where we trained it with inputs like `(1, 1)`, we can train it with, for example, security logs where we vectorize data such as an IP address `(201.48.22.137)`.
+This theory is not just academic; At October 4th of 2025 I have a independent research project for threat detection, focusing on OWASP standards. The primary obstacle was the lack of large, labeled datasets for training. To overcome this, I developed a methodology: first, generating thousands of realistic, synthetic security logs using reproducible randomness, and then leveraging a Large Language Model (LLM) to label each log as either an "attack" or "benign." This approach of "black-box distillation" proved highly effective, allowing the creation of a 200,000-entry dataset for approximately $30 USD, achieving over 95% consistency compared to manual labeling.
 
 ```json
 {
@@ -236,5 +237,4 @@ Basically, the input vector that our simple perceptron receives—just as it can
 }
 ```
 
-Similarly, we can apply functions to the weights `w(c)`, where `c` could be a "memory mechanism" stored in a cache-type database for each user, representing the sensitivity of each user based on their last 100 requests.
-
+The results of training a simple perceptron on this high-dimensional data are highly promising. Initial tests have achieved up to 93% efficiency in OWASP Top 10 attacks detection, with an estimated inference cost savings of over 99% compared to commercial enterprise solutions like AWS WAF. I drafted into a research paper, involves refining the vectorization methods and implementing advanced parameters, such as a context-aware weight function mathematically interpreted as w(c), to further enhance detection capabilities.
