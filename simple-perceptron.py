@@ -288,5 +288,6 @@ if __name__ == "__main__":
     simple_perceptron.train(epochs=30, patience=3, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_info=model_info)
 
     # load a saved model and make a prediction
-    prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_09_30.json', features=[0, 1])
+    prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_10_04.json', features=[0, 1])
+
     print(prediction)
