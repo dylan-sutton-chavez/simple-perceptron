@@ -219,7 +219,7 @@ Basically, the input vector that our simple perceptron receives—just as it can
     "timestamp": "string",
     "source": {
       "ip": "string",
-      "port": int
+      "port": 0
     }
   },
   "http": {
@@ -229,11 +229,12 @@ Basically, the input vector that our simple perceptron receives—just as it can
     "endpoint": "string"
   },
   "metrics": {
-    "payload_size": float,
-    "response_size": float,
-    "response_time_ms": int
+    "payload_size": 0.0,
+    "response_size": 0.0,
+    "response_time_ms": 0
   }
 }
 ```
 
 Similarly, we can apply functions to the weights `w(c)`, where `c` could be a "memory mechanism" stored in a cache-type database for each user, representing the sensitivity of each user based on their last 100 requests.
+
