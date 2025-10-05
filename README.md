@@ -209,7 +209,6 @@ Model saved as `simple-perceptron.2025_10_04.json`
 
 ## 3. Using the Model in Complex Tasks
 
-3. Using the Model in Complex Tasks
 After understanding how the simple perceptron works, you might infer that this model is too basic for complex tasks. However, now with giant models with billions of parameters, this classic algorithms are efficient solutions. The foundation for this lies in a principle described by Cover "Thus the probability of separability shows a pronounced threshold effect when the number of patterns is equal to twice the number of dimensions..." (Cover, 1958, p. 331). This suggests that many complex problems can become linearly separable, and thus solvable by simple models, provided the data is represented in a sufficiently high-dimensional vector space.
 
 This theory is not just academic; At October 4th of 2025 I have a independent research project for threat detection, focusing on OWASP standards. The primary obstacle was the lack of large, labeled datasets for training. To overcome this, I developed a methodology: first, generating thousands of realistic, synthetic security logs using reproducible randomness, and then leveraging a Large Language Model (LLM) to label each log as either an "attack" or "benign." This approach of "black-box distillation" proved highly effective, allowing the creation of a 200,000-entry dataset for approximately $30 USD, achieving over 95% consistency compared to manual labeling.
@@ -238,3 +237,4 @@ This theory is not just academic; At October 4th of 2025 I have a independent re
 ```
 
 The results of training a simple perceptron on this high-dimensional data are highly promising. Initial tests have achieved up to 93% efficiency in OWASP Top 10 attacks detection, with an estimated inference cost savings of over 99% compared to commercial enterprise solutions like AWS WAF. I drafted into a research paper, involves refining the vectorization methods and implementing advanced parameters, such as a context-aware weight function mathematically interpreted as w(c), to further enhance detection capabilities.
+
