@@ -54,14 +54,14 @@ $$
 
 1. **We want to learn:**
 
-   These are de the training data. They define the logic function we want the perceptron to learn (in this case, a simplified AND). 
+   These are the training data. They define the logic function we want the perceptron to learn (in this case, a simplified `AND`). 
 
    - `(0,0) → 0`
    - `(1,1) → 1`
 
 2. **Initialization:**
 
-   We start with weights for each input, and the bias set to zero. The value η is the learning rate, witch controls how much the parameters are adjusted when there is an error.
+   We start with weights for each input, and the bias set to zero. The value `η` is the learning rate, witch controls how much the parameters are adjusted when there is an error.
 
    - `w1 = 0, w2 = 0`
    - `b = 0`
@@ -214,3 +214,4 @@ After understanding how the simple perceptron works, you might infer that this m
 Basically, the input vector that our simple perceptron receives—just as it can be straightforward in the example where it's learning the `OR` gate—can also be applied to cybersecurity, facial recognition, sentiment analysis, and more. Everything depends on the vector that our simple perceptron receives. Just like in the example where we trained it with inputs like `(1, 1)`, we can train it with, for example, security logs where we vectorize data such as an IP address `(201.48.22.137)`.
 
 Similarly, we can apply functions to the weights `w(c)`, where `c` could be a "memory mechanism" stored in a cache-type database for each user, representing the sensitivity of each user based on their last 100 requests.
+
