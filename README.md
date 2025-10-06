@@ -245,3 +245,4 @@ This theory is not just academic; **On October 5th, 2025**, I have an **independ
 
 
 The results of training a **simple perceptron** on this **high-dimensional** data are highly promising. Initial tests have achieved up to **93% efficiency** in **OWASP Top 10 attacks detection**, with an estimated **inference cost savings of over 99%** compared to commercial enterprise solutions like **AWS WAF**. I drafted it into a research paper, involves refining the vectorization methods and implementing advanced parameters, such as a **context-aware weight function** mathematically interpreted as `w(c)`, to further enhance detection capabilities.
+
