@@ -290,4 +290,3 @@ if __name__ == "__main__":
     # load a saved model and make a prediction
     prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_10_04.json', features=[0, 1])
     print(prediction)
-
