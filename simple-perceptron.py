@@ -35,7 +35,10 @@ class SimplePerceptron:
 
         time complexity → o(e*n*f)
         """
+        # load the dataset, and standarize the features
         dataset = self._load_json(file_path=labeled_dataset_path)
+        standardized_dataset = self._zscore_dataset(dataset)
+
         num_features = len(dataset[0]['features'])
 
         # initialize the weights and bias with random vaules
@@ -47,7 +50,7 @@ class SimplePerceptron:
 
         # iterate through each of the epochs
         for epoch in range(epochs):
-            elapsed_time, has_errors, errors = self._train_one_epoch(dataset, learning_rate)
+            elapsed_time, has_errors, errors = self._train_one_epoch(standardized_dataset, learning_rate)
             total_time += elapsed_time
 
             self._log_epoch_metrics(epoch, epochs, errors, dataset, elapsed_time)
@@ -90,12 +93,12 @@ class SimplePerceptron:
         y_pred = self._linear_combination(features)
         return self._activation_step(y_pred)
     
-    def _train_one_epoch(self, dataset: dict, learning_rate: float):
+    def _train_one_epoch(self, normalized_dataset: dict, learning_rate: float):
         """
         execute one training epoch for the dataset
 
         args:
-            dataset: dict → labaled training dataset
+            normalized_dataset: dict → labaled and normalized training dataset
             learning_rate: float → step size for weight updates
         
         output:
@@ -110,8 +113,8 @@ class SimplePerceptron:
         has_errors = False
         errors = []
 
-        # loop through examples in the dataset 
-        for example in dataset:
+        # loop through examples in the normalized dataset 
+        for example in normalized_dataset:
             features = example['features']
             y_true = example['label']
 
@@ -232,6 +235,59 @@ class SimplePerceptron:
         self.bias += learning_rate * prediction_error
         self.weights = [w + learning_rate * prediction_error * x for w, x in zip(self.weights, features)]
 
+    def _zscore_dataset(self, dataset: dict):
+        """
+        normalize the dataset features in the range of `[-3, 3]`
+
+        args:
+            features: dict → not scalled dataset
+
+        return:
+            dict → normalized features in the range of `-3`, and `3`
+
+        time complexity → o(n)
+        
+        maths:
+            μ = (Σᵢ₌₁ⁿ xᵢ) / n
+            σ = √( Σᵢ₌₁ⁿ (xᵢ - μ)^2 / n )
+            zᵢ = (xᵢ - μ) / σ
+        """
+        num_features = len(dataset[0]['features'])
+        num_samples = len(dataset)
+
+        # calculate the mean for each features (xᵢ) column
+        means = [
+            sum(example['features'][i] for example in dataset) / num_samples 
+            for i in range(num_features)
+        ]
+
+        # compute the standar desviation for each feature column
+        stds = []
+        for i in range(num_features):
+            column_values = [example['features'][i] for example in dataset]
+
+            # determine the variance of the column
+            variance = sum((x - means[i]) **2 for x in column_values) / (num_samples - 1 if num_samples > 1 else 1)
+            std_dev = variance ** 0.5
+
+            # avoid division by zero
+            if std_dev == 0:
+                std_dev = 1
+
+            stds.append(std_dev)
+
+        # create a new dataset with the normalized features using z-score
+        standardized_dataset = []
+        for example in dataset:
+            standardized_example = {
+                'features': [(x - means[i]) / stds[i] for i, x in enumerate(example['features'])],
+                'label': example['label']
+            }
+
+            standardized_dataset.append(standardized_example)
+
+        return standardized_dataset
+
     def _activation_step(self, value: float):
         """
         applies step function to a given value
@@ -288,5 +344,5 @@ if __name__ == "__main__":
     simple_perceptron.train(epochs=30, patience=3, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_info=model_info)
 
     # load a saved model and make a prediction
-    prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_10_04.json', features=[0, 1])
+    prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_10_13.json', features=[0, 1])
     print(prediction)

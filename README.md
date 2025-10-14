@@ -185,26 +185,22 @@ The `SimplePerceptron` module implements a complete cycle of the training and in
 
 ```txt
 Epoch 1/30
-    Weights: [0.04089614, 0.63768002] | Bias: 0.03646926 | Error: 0.5 | Time: 0.0171
+    Weights: [0.5389552524598852, 0.5879574924598852] | Bias: 0.69198097 | Error: 0.75 | Time: 0.011
 Epoch 2/30
-    Weights: [0.69089614, 0.63768002] | Bias: 0.03646926 | Error: 0.5 | Time: 0.0169
+    Weights: [0.5389552524598852, 0.5879574924598852] | Bias: 0.69198097 | Error: 0.0 | Time: 0.0094
 Epoch 3/30
-    Weights: [0.69089614, 0.63768002] | Bias: -0.61353074 | Error: 0.25 | Time: 0.0109
+    Weights: [0.5389552524598852, 0.5879574924598852] | Bias: 0.69198097 | Error: 0.0 | Time: 0.0084
 Epoch 4/30
-    Weights: [0.69089614, 0.63768002] | Bias: -0.61353074 | Error: 0.0 | Time: 0.0133
-Epoch 5/30
-    Weights: [0.69089614, 0.63768002] | Bias: -0.61353074 | Error: 0.0 | Time: 0.0106
-Epoch 6/30
-    Weights: [0.69089614, 0.63768002] | Bias: -0.61353074 | Error: 0.0 | Time: 0.026
+    Weights: [0.5389552524598852, 0.5879574924598852] | Bias: 0.69198097 | Error: 0.0 | Time: 0.0082
 Early Stopping
-Model saved as `simple-perceptron.2025_10_04.json`
+Model saved as `simple-perceptron.2025_10_13.json`
 ```
 
 4. You can make inference with the trained model:
 
 ```python
     # load a saved model and make a prediction
-    prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_10_04.json', features=[0, 1])
+    prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_10_13.json', features=[0, 1])
     print(prediction)
 ```
 
@@ -243,6 +239,4 @@ This theory is not just academic; **On October 5th, 2025**, I have an **independ
 }
 ```
 
-
-The results of training a **simple perceptron** on this **high-dimensional** data are highly promising. Initial tests have achieved up to **93% efficiency** in **OWASP Top 10 attacks detection**, with an estimated **inference cost savings of over 99%** compared to commercial enterprise solutions like **AWS WAF**. I drafted it into a research paper, involves refining the vectorization methods and implementing advanced parameters, such as a **context-aware weight function** mathematically interpreted as `w(c)`, to further enhance detection capabilities.
-
+The results of training a **simple perceptron** on this **high-dimensional** data are highly promising. Initial tests have achieved up to **93% efficiency** in **OWASP Top 10 attacks detection**, with an estimated **inference cost savings of over 99%** compared to commercial enterprise solutions like **AWS WAF**. I drafted it into a research paper, involves refining the vectorization methods and implementing advanced parameters, such as a **context-aware weight function** mathematically interpreted as `w(c) * x + b`, to further enhance detection capabilities.
