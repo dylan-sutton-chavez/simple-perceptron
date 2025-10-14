@@ -185,22 +185,22 @@ The `SimplePerceptron` module implements a complete cycle of the training and in
 
 ```txt
 Epoch 1/30
-    Weights: [0.5666446924598851, 0.49325541245988513] | Bias: 0.68097592 | Error: 0.75 | Time: 0.0166
+    Weights: [0.4995584124598852, 0.503278592459885] | Bias: 0.69950886 | Error: 0.75 | Time: 0.0168
 Epoch 2/30
-    Weights: [0.5666446924598851, 0.49325541245988513] | Bias: 0.68097592 | Error: 0.0 | Time: 0.0234
+    Weights: [0.4995584124598852, 0.503278592459885] | Bias: 0.69950886 | Error: 0.0 | Time: 0.0115
 Epoch 3/30
-    Weights: [0.5666446924598851, 0.49325541245988513] | Bias: 0.68097592 | Error: 0.0 | Time: 0.0219
+    Weights: [0.4995584124598852, 0.503278592459885] | Bias: 0.69950886 | Error: 0.0 | Time: 0.0118
 Epoch 4/30
-    Weights: [0.5666446924598851, 0.49325541245988513] | Bias: 0.68097592 | Error: 0.0 | Time: 0.0348
+    Weights: [0.4995584124598852, 0.503278592459885] | Bias: 0.69950886 | Error: 0.0 | Time: 0.0113
 Early Stopping
-Model saved as `simple-perceptron.2025_10_13.json`
+Model saved as `simple-perceptron.2025_10_14.json`
 ```
 
 4. You can make inference with the trained model:
 
 ```python
     # load a saved model and make a prediction
-    prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_10_13.json', features=[0, 1])
+    prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_10_14.json', features=[0, 1])
     print(prediction)
 ```
 
@@ -209,6 +209,35 @@ Model saved as `simple-perceptron.2025_10_13.json`
 ```txt
 1
 ```
+
+6. We can fine-tune a core model with more data using:
+
+```python
+# define the fine-tuned model metadata
+model_info = {
+    'model_name': "Simple Perceptron", 
+    'description': "Fine-tuned simple perceptron using the gate `OR`", 
+    'author': "Dylan Sutton Chavez"
+}
+
+# make fine-tuning to the past model
+simple_perceptron.fine_tuning(epochs=10, patience=2, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_path='simple-perceptron.2025_10_14.json')
+```
+
+7. And we recive (output):
+
+```txt
+Epoch 1/10
+    Weights: [0.4995584124598852, 0.503278592459885] | Bias: 0.69950886 | Error: 0.0 | Time: 0.0195
+Epoch 2/10
+    Weights: [0.4995584124598852, 0.503278592459885] | Bias: 0.69950886 | Error: 0.0 | Time: 0.0133
+Early Stopping
+Model saved as `simple-perceptron.2025_10_14.json`
+```
+
+> In this case we are using the same dataset, but we can use the set of your preference to make the fine-tuning (using the same scale, dimensions and coherent-set)
+
+8. The usage of a fine-tuned model is the same, import the module `inference` whit the given `mode path`
 
 ## 3. Using the Model in Complex Tasks
 
