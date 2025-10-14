@@ -185,13 +185,13 @@ The `SimplePerceptron` module implements a complete cycle of the training and in
 
 ```txt
 Epoch 1/30
-    Weights: [0.5389552524598852, 0.5879574924598852] | Bias: 0.69198097 | Error: 0.75 | Time: 0.011
+    Weights: [0.5666446924598851, 0.49325541245988513] | Bias: 0.68097592 | Error: 0.75 | Time: 0.0166
 Epoch 2/30
-    Weights: [0.5389552524598852, 0.5879574924598852] | Bias: 0.69198097 | Error: 0.0 | Time: 0.0094
+    Weights: [0.5666446924598851, 0.49325541245988513] | Bias: 0.68097592 | Error: 0.0 | Time: 0.0234
 Epoch 3/30
-    Weights: [0.5389552524598852, 0.5879574924598852] | Bias: 0.69198097 | Error: 0.0 | Time: 0.0084
+    Weights: [0.5666446924598851, 0.49325541245988513] | Bias: 0.68097592 | Error: 0.0 | Time: 0.0219
 Epoch 4/30
-    Weights: [0.5389552524598852, 0.5879574924598852] | Bias: 0.69198097 | Error: 0.0 | Time: 0.0082
+    Weights: [0.5666446924598851, 0.49325541245988513] | Bias: 0.68097592 | Error: 0.0 | Time: 0.0348
 Early Stopping
 Model saved as `simple-perceptron.2025_10_13.json`
 ```

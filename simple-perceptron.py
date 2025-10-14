@@ -37,7 +37,7 @@ class SimplePerceptron:
         """
         # load the dataset, and standarize the features
         dataset = self._load_json(file_path=labeled_dataset_path)
-        standardized_dataset = self._zscore_dataset(dataset)
+        standardized_dataset, means, standar_desviation = self._zscore_dataset(dataset)
 
         num_features = len(dataset[0]['features'])
 
@@ -64,7 +64,7 @@ class SimplePerceptron:
                 if patience_counter >= patience:
                     print(f"Early Stopping")
 
-                    self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time)
+                    self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time, means=means, standar_desviation=standar_desviation)
                     return
                 
         # if the loop finish without early stopping, save the last epoch model
@@ -83,16 +83,22 @@ class SimplePerceptron:
 
         time complexity → o(f)
         """
+        # scale the features in the range of `[-3, 3]` with a given means, and standar desviation lists
+        zscore = lambda means, stds, features: [(x - means[i]) / stds[i] for i, x in enumerate(features)]
+
         model = self._load_json(model_path)
 
         # start the weights and bias with the loaded model
         self.weights = model['parameters']['weights']
         self.bias = model['parameters']['bias']
 
+        means = model['normalization']['means']
+        stds = model['normalization']['standar_desviation']
+
         # make a prediction and return the result
-        y_pred = self._linear_combination(features)
+        y_pred = self._linear_combination(zscore(means, stds, features))
         return self._activation_step(y_pred)
-    
+
     def _train_one_epoch(self, normalized_dataset: dict, learning_rate: float):
         """
         execute one training epoch for the dataset
@@ -154,7 +160,7 @@ class SimplePerceptron:
         """
         print(f"Epoch {epoch + 1}/{epochs}\n    Weights: {self.weights} | Bias: {round(self.bias, 8)} | Error: {len(errors) / len(dataset)} | Time: {round(elapsed_time * 1000, 8)}")
 
-    def _save_model(self, model_info: dict[str, object], epochs: int, learning_rate: int, dataset_path: str, total_time: float):
+    def _save_model(self, model_info: dict[str, object], epochs: int, learning_rate: int, dataset_path: str, total_time: float, means: list, standar_desviation: list):
         """
         saves perceptron model, parameters, and training metadata to `JSON`
 
@@ -164,6 +170,8 @@ class SimplePerceptron:
             learning_rate: int → learning rate used
             dataset_path: str → path to training dataset
             total_time: float → total training time in seconds
+            means: list → mean of the dataset columns
+            standar_desviation: list → standar desviation of the dataset columns
 
         output:
             None
@@ -179,6 +187,11 @@ class SimplePerceptron:
             "parameters": {
                 "weights": self.weights,
                 "bias": self.bias
+            },
+
+            "normalization": {
+                "means": means,
+                "standar_desviation": standar_desviation
             },
 
             "training": {
@@ -244,6 +257,8 @@ class SimplePerceptron:
 
         return:
             dict → normalized features in the range of `-3`, and `3`
+            means: list → mean of the dataset columns
+            standar_desviation: list → standar desviation of the dataset columns
 
         time complexity → o(n)
         
@@ -286,7 +301,7 @@ class SimplePerceptron:
 
             standardized_dataset.append(standardized_example)
 
-        return standardized_dataset
+        return standardized_dataset, means, stds
 
     def _activation_step(self, value: float):
         """
