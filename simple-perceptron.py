@@ -393,7 +393,7 @@ class SimplePerceptron:
             means: list[float] → mean of the dataset columns
             standar_desviation: list[float] → standar desviation of the dataset columns
 
-        time complexity → o(n)
+        time complexity → o(n*f)
         
         maths:
             μ = (Σᵢ₌₁ⁿ xᵢ) / n
