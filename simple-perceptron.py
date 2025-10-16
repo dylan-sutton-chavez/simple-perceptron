@@ -92,9 +92,6 @@ class SimplePerceptron:
 
         time complexity → o(f)
         """
-        # scale the features in the range of `[-3, 3]` with a given means, and standar desviation lists
-        zscore = lambda means, stds, features: [(x - means[i]) / stds[i] for i, x in enumerate(features)]
-
         model = self._load_json(model_path)
 
         # start the weights and bias with the loaded model
@@ -106,7 +103,7 @@ class SimplePerceptron:
         stds = model['normalization']['standar_desviation']
 
         # make a prediction and return the result
-        y_pred = self._linear_combination(zscore(means, stds, features))
+        y_pred = self._linear_combination(self._zscore(means, stds, features))
         return self._activation_step(y_pred)
 
     def _training_loop(self, epochs: int, standarized_dataset: list[dict], learning_rate: float, dataset: list[dict], patience: int, means: list[float], standar_desviation: list[float], labeled_dataset_path: str, model_info: dict[str, any], model_path: str = None, model: dict[str, any] = None):
@@ -326,6 +323,25 @@ class SimplePerceptron:
         self.bias += learning_rate * prediction_error
         self.weights: list[float] = [w + learning_rate * prediction_error * x for w, x in zip(self.weights, features)]
 
+    def _zscore(self, means: list[float], standar_desviation: list[float], features: list[float]):
+        """
+        scale the features in the range of `[-3, 3]` with a given means, and standar desviation lists
+
+        args:
+            means: list[float] →
+            standar_desviation: list[float] →
+            features: list[float] →
+
+        return:
+            list[float] →
+
+        time complexity → o(n)
+
+        maths:
+            zᵢ = (xᵢ - μ) / σ
+        """
+        return [(x - means[i]) / standar_desviation[i] for i, x in enumerate(features)]
+
     def _zscore_dataset(self, dataset: dict[str, any], means: list[float] = None, standar_desviation: list[float] = None):
         """
         normalize the dataset features in the range of `[-3, 3]`
@@ -345,7 +361,6 @@ class SimplePerceptron:
         maths:
             μ = (Σᵢ₌₁ⁿ xᵢ) / n
             σ = √( Σᵢ₌₁ⁿ (xᵢ - μ)^2 / n )
-            zᵢ = (xᵢ - μ) / σ
         """
         # review if is receiving a given means, and standar desviation
         if  means is None and standar_desviation is None:
@@ -377,7 +392,7 @@ class SimplePerceptron:
         standardized_dataset: list = []
         for example in dataset:
             standardized_example: dict[str, any] = {
-                'features': [(x - means[i]) / standar_desviation[i] for i, x in enumerate(example['features'])], # z-scale algorithm using a fiven `means` and `standar desviation`
+                'features': self._zscore(means, standar_desviation, example['features']),
                 'label': example['label']
             }
 
