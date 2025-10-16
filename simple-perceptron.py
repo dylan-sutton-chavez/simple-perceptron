@@ -19,7 +19,7 @@ class SimplePerceptron:
         self.weights: list[float] = []
         self.bias: float = 0.0
 
-    def train(self, epochs: int, patience: int, labeled_dataset_path: str, learning_rate: float, model_info: dict[str]):
+    def train(self, epochs: int, patience: int, labeled_dataset_path: str, learning_rate: float, model_info: dict[str, str]):
         """
         train perceptron model with early stopping and model saving
 
@@ -28,7 +28,7 @@ class SimplePerceptron:
             patience: int → tolerance without improvement
             labeled_dataset_path: str → dataset file path
             learning_rate: float → weight update rate
-            model_info: dict[str] → model metadata dictionary
+            model_info: dict[str. str] → model metadata dictionary
 
         output:
             None
@@ -45,8 +45,8 @@ class SimplePerceptron:
         self.weights = [round(uniform(-0.07, 0.07), 8) for _ in range(num_features)]
         self.bias = round(uniform(-0.07, 0.07), 8)
 
-        patience_counter = 0
-        total_time = 0.0
+        patience_counter: int = 0
+        total_time: float = 0.0
 
         # iterate through each of the epochs
         for epoch in range(epochs):
@@ -57,7 +57,7 @@ class SimplePerceptron:
 
             # early stopping logic, if the model makes no mistakes
             if has_errors:
-                patience_counter = 0 # set to zero the `no-errors` counter
+                patience_counter: int = 0 # set to zero the `no-errors` counter
             
             else:
                 patience_counter += 1 # increment one the `no-errors` counter
@@ -70,7 +70,7 @@ class SimplePerceptron:
         # if the loop finish without early stopping, save the last epoch model
         self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time, means=means, standar_desviation=standar_desviation)
 
-    def fine_tuning(self, epochs: int, patience: int, labeled_dataset_path: str, learning_rate: float, model_path: dict[str]):
+    def fine_tuning(self, epochs: int, patience: int, labeled_dataset_path: str, learning_rate: float, model_path: str):
         """
         use a core pre-trained model, fine-tune with more data and save the model 
 
@@ -79,7 +79,7 @@ class SimplePerceptron:
             patience: int → tolerance without improvement
             labeled_dataset_path: str → dataset file path
             learning_rate: float → weight update rate
-            model_path: dict[str] → core model path
+            model_path: str → core model path
 
         return:
             None
@@ -99,8 +99,8 @@ class SimplePerceptron:
 
         standarized_dataset, means, standar_desviation = self._zscore_dataset(dataset, means, standar_desviation)
 
-        patience_counter = 0
-        total_time = 0.0
+        patience_counter: int = 0
+        total_time: float = 0.0
 
         # iterate through each of the epochs
         for epoch in range(epochs):
@@ -111,7 +111,7 @@ class SimplePerceptron:
 
             # early stopping logic, if the model makes no mistakes
             if has_errors:
-                patience_counter = 0 # set to zero the `no-errors` counter
+                patience_counter: int = 0 # set to zero the `no-errors` counter
 
             else:
                 patience_counter += 1 # increment one the `no-errors` counter
@@ -154,12 +154,12 @@ class SimplePerceptron:
         y_pred = self._linear_combination(zscore(means, stds, features))
         return self._activation_step(y_pred)
 
-    def _train_one_epoch(self, normalized_dataset: dict, learning_rate: float):
+    def _train_one_epoch(self, normalized_dataset: list[dict], learning_rate: float):
         """
         execute one training epoch for the dataset
 
         args:
-            normalized_dataset: dict → labaled and normalized training dataset
+            normalized_dataset: list[dict] → labaled and normalized training dataset
             learning_rate: float → step size for weight updates
         
         output:
@@ -171,8 +171,8 @@ class SimplePerceptron:
         """
         start = perf_counter()
         
-        has_errors = False
-        errors = []
+        has_errors: float = False
+        errors: list[float] = []
 
         # loop through examples in the normalized dataset 
         for example in normalized_dataset:
@@ -197,15 +197,15 @@ class SimplePerceptron:
 
         return elapsed_time, has_errors, errors
 
-    def _log_epoch_metrics(self, epoch: int, epochs: int, errors: list, dataset: dict, elapsed_time: float):
+    def _log_epoch_metrics(self, epoch: int, epochs: int, errors: list[float], dataset: list[dict], elapsed_time: float):
         """
         log epoch metric including `weights`, `bias`, `error`, and `time`
 
         args:
             epoch: int → current epoch index
             epochs: int → total training epochs
-            errors: list → misclassified samples in current epoch
-            dataset: dict → training dataset used
+            errors: list[float] → misclassified samples in current epoch
+            dataset: list[dict] → training dataset used
             elapsed_time: float → epoch execution time
 
         return:
@@ -215,19 +215,19 @@ class SimplePerceptron:
         """
         print(f"Epoch {epoch + 1}/{epochs}\n    Weights: {self.weights} | Bias: {round(self.bias, 8)} | Error: {len(errors) / len(dataset)} | Time: {round(elapsed_time * 1000, 8)}")
 
-    def _save_model(self, model_info: dict[str, object], epochs: int, learning_rate: int, dataset_path: str, total_time: float, means: list, standar_desviation: list, past_model_path: str = None, past_model: dict[str] = None):
+    def _save_model(self, model_info: dict[str, str], epochs: int, learning_rate: int, dataset_path: str, total_time: float, means: list[float], standar_desviation: list[float], past_model_path: str = None, past_model: dict[str, any] = None):
         """
         saves perceptron model, parameters, and training metadata to `JSON`
 
         args:
-            model_info: dict[str, object] → model metadata (name, description, author)
+            model_info: dict[str, str] → model metadata (name, description, author)
             epochs: int → number of training epochs
             learning_rate: int → learning rate used
             dataset_path: str → path to training dataset
             total_time: float → total training time in seconds
-            means: list → mean of the dataset columns
-            standar_desviation: list → standar desviation of the dataset columns
-            past_model: dict[str] = None → past model metadata (name, created_at, epochs,...)
+            means: list[float] → mean of the dataset columns
+            standar_desviation: list[float] → standar desviation of the dataset columns
+            past_model: dict[str, any] = None → past model metadata (name, created_at, epochs,...)
             past_model_path: str = None → past model file path
 
         output:
@@ -292,7 +292,7 @@ class SimplePerceptron:
         compute the `weighted` sum of `features` plus `bias`
 
         args:
-            input_features: list → input feature vector
+            input_features: list[float] → input feature vector
 
         output:
             float → linear combination result
@@ -304,13 +304,13 @@ class SimplePerceptron:
         """
         return sum(w * x for w, x in zip(self.weights, input_features)) + self.bias
     
-    def _update_weights_and_bias(self, prediction_error: float, features: list, learning_rate: float):
+    def _update_weights_and_bias(self, prediction_error: float, features: list[float], learning_rate: float):
         """
         updates perceptron `weights` and `bias` based on prediction `error`
 
         args:
             prediction_error: float → difference between `True` and predicted label
-            features: list → input feature vector
+            features: list[float] → input feature vector
             learning_rate: float → step size for `weight` updates
 
         output:
@@ -323,21 +323,21 @@ class SimplePerceptron:
             wᵢ ← wᵢ + η · (y - ŷ) xᵢ
         """
         self.bias += learning_rate * prediction_error
-        self.weights = [w + learning_rate * prediction_error * x for w, x in zip(self.weights, features)]
+        self.weights: list[float] = [w + learning_rate * prediction_error * x for w, x in zip(self.weights, features)]
 
-    def _zscore_dataset(self, dataset: dict, means: list = None, standar_desviation: list = None):
+    def _zscore_dataset(self, dataset: dict[str, any], means: list[float] = None, standar_desviation: list[float] = None):
         """
         normalize the dataset features in the range of `[-3, 3]`
 
         args:
-            features: dict → not scalled dataset
-            means: list = None → given means
-            standar_desviation: list = None → a list of the standar desviation to scale the data whit means and z-score
+            features: dict[str, any] → not scalled dataset
+            means: list[float] = None → given means
+            standar_desviation: list[float] = None → a list of the standar desviation to scale the data whit means and z-score
 
         return:
-            dict → normalized features in the range of `-3`, and `3`
-            means: list → mean of the dataset columns
-            standar_desviation: list → standar desviation of the dataset columns
+            dict[str, any] → normalized features in the range of `-3`, and `3`
+            means: list[float] → mean of the dataset columns
+            standar_desviation: list[float] → standar desviation of the dataset columns
 
         time complexity → o(n)
         
@@ -348,34 +348,34 @@ class SimplePerceptron:
         """
         # review if is receiving a given means, and standar desviation
         if  means is None and standar_desviation is None:
-            num_features = len(dataset[0]['features'])
-            num_samples = len(dataset)
+            num_features: int = len(dataset[0]['features'])
+            num_samples: int = len(dataset)
 
             # calculate the mean for each features (xᵢ) column
-            means = [
+            means: list[float] = [
                 sum(example['features'][i] for example in dataset) / num_samples 
                 for i in range(num_features)
             ]
 
             # compute the standar desviation for each feature column
-            standar_desviation = []
+            standar_desviation: list[float] = []
             for i in range(num_features):
-                column_values = [example['features'][i] for example in dataset]
+                column_values: list[float] = [example['features'][i] for example in dataset]
 
                 # determine the variance of the column
-                variance = sum((x - means[i]) **2 for x in column_values) / (num_samples - 1 if num_samples > 1 else 1)
-                std_dev = variance ** 0.5
+                variance: float = sum((x - means[i]) **2 for x in column_values) / (num_samples - 1 if num_samples > 1 else 1)
+                std_dev: float = variance ** 0.5
 
                 # avoid division by zero
                 if std_dev == 0:
-                    std_dev = 1
+                    std_dev: float = 1
 
                 standar_desviation.append(std_dev)
 
         # create a new dataset with the normalized features using z-score
-        standardized_dataset = []
+        standardized_dataset: list = []
         for example in dataset:
-            standardized_example = {
+            standardized_example: dict[str, any] = {
                 'features': [(x - means[i]) / standar_desviation[i] for i, x in enumerate(example['features'])], # z-scale algorithm using a fiven `means` and `standar desviation`
                 'label': example['label']
             }
