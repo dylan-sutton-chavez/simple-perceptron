@@ -21,12 +21,12 @@ class PerceptronSpec:
         self.bias: float = bias
 
 class PerceptronCache:
-    def __init__(self):
+    def __init__(self, cache_length: int = None):
         """
         initialize the cache dict in memory with lock for the race conditions
 
         args:
-            None
+            cache_length: int → define the max length of the cache
 
         output:
             None
@@ -35,6 +35,8 @@ class PerceptronCache:
         """
         self.lock = Lock()
         self.cache: dict[str, PerceptronSpec] = {}
+
+        self.max_length = cache_length
 
     def add_perceptron(self, weights: list[float], bias: float):
         """
@@ -50,6 +52,8 @@ class PerceptronCache:
         time comlexity → o(1)
         """
         perceptron: PerceptronSpec = PerceptronSpec(weights, bias) # create a new perceptron object
+
+        self._check_length()
         
         with self.lock:
             # save into a dict the perceptron with the entity id as an identifier
@@ -117,11 +121,28 @@ class PerceptronCache:
             if bias is not None:
                 perceptron.bias = bias
 
+    def _check_length(self):
+        """
+        check the length of the cache, and if exced the max length delete the last object
+
+        args:
+            None
+            
+        output:
+            None
+
+        time complexity → o(1)
+        """
+        with self.lock:
+            # check if exists a max length, and confirm if exced the max length
+            if self.max_length is not None and len(self.cache) >= self.max_length:
+                self.cache.popitem(last=False)
+
 if __name__ == "__main__":
     """execute this block only when the script is run directly"""
 
     # initialize the shared perceptron cache
-    perceptron_cache = PerceptronCache()
+    perceptron_cache = PerceptronCache(cache_length=7)
 
     # add a perceptron to the shared cache
     id = perceptron_cache.add_perceptron(weights=[0.6326, 0.5294], bias=0.682)

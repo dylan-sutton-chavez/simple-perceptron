@@ -50,8 +50,6 @@ class SimplePerceptron:
 
         self._training_loop(epochs=epochs, standarized_dataset=standarized_dataset, learning_rate=learning_rate, dataset=dataset, patience=patience, means=means, standar_desviation=standar_desviation, labeled_dataset_path=labeled_dataset_path, model_info=model_info, entity_id=entity_id)
 
-        self.perceptron_cache.remove_perceptron(entity_id)
-
     def fine_tuning(self, epochs: int, patience: int, labeled_dataset_path: str, learning_rate: float, model_path: str, model_info: dict[str, str]):
         """
         use a core pre-trained model, fine-tune with more data and save the model 
@@ -85,8 +83,6 @@ class SimplePerceptron:
         standarized_dataset, means, standar_desviation = self._zscore_dataset(dataset, means, standar_desviation)
         
         self._training_loop(epochs=epochs, standarized_dataset=standarized_dataset, learning_rate=learning_rate, dataset=dataset, patience=patience, means=means, standar_desviation=standar_desviation, labeled_dataset_path=labeled_dataset_path, model_path=model_path, model=model, model_info=model_info, entity_id=entity_id)
-
-        self.perceptron_cache.remove_perceptron(entity_id)
 
     def inference(self, model_path: str, features: list[float]):
         """
@@ -470,7 +466,7 @@ if __name__ == "__main__":
     """execute this block only when the script is run directly"""
 
     # create a cache object
-    perceptron_cache = PerceptronCache()
+    perceptron_cache = PerceptronCache(cache_length=10)
 
     # define the model metadata
     model_info = {

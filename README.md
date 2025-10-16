@@ -168,7 +168,7 @@ The `SimplePerceptron` module implements a complete cycle of the training and in
 
 ```python
 # create a cache object
-perceptron_cache = PerceptronCache()
+perceptron_cache = PerceptronCache(cache_length=10)
 
 # define the model metadata
 model_info = {
