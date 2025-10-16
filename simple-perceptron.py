@@ -171,7 +171,7 @@ class SimplePerceptron:
         """
         start = perf_counter()
         
-        has_errors: float = False
+        has_errors: bool = False
         errors: list[float] = []
 
         # loop through examples in the normalized dataset 
@@ -190,7 +190,7 @@ class SimplePerceptron:
                 # adjust weights and bias of the model
                 self._update_weights_and_bias(error, features, learning_rate)
 
-                has_errors = True
+                has_errors: bool = True
                 errors.append(error)
 
         elapsed_time = perf_counter() - start
