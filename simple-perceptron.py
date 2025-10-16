@@ -29,10 +29,10 @@ class SimplePerceptron:
             patience: int → tolerance without improvement
             labeled_dataset_path: str → dataset file path
             learning_rate: float → weight update rate
-            model_info: dict[str. str] → model metadata dictionary
+            model_info: dict[str, str] → model metadata dictionary
 
         output:
-            None
+            entity_id: str → an `ID` to find the `OBJECT` in the `CACHE`
 
         time complexity → o(e*n*f)
         """
@@ -46,9 +46,11 @@ class SimplePerceptron:
         weights = [round(uniform(-0.07, 0.07), 8) for _ in range(num_features)]
         bias = round(uniform(-0.07, 0.07), 8)
 
-        entity_id = self.perceptron_cache.add_perceptron(weights=weights, bias=bias)
+        entity_id = self.perceptron_cache.add_perceptron(weights=weights, bias=bias, standar_desviation=standar_desviation, means=means)
 
         self._training_loop(epochs=epochs, standarized_dataset=standarized_dataset, learning_rate=learning_rate, dataset=dataset, patience=patience, means=means, standar_desviation=standar_desviation, labeled_dataset_path=labeled_dataset_path, model_info=model_info, entity_id=entity_id)
+
+        return entity_id
 
     def fine_tuning(self, epochs: int, patience: int, labeled_dataset_path: str, learning_rate: float, model_path: str, model_info: dict[str, str]):
         """
@@ -62,8 +64,8 @@ class SimplePerceptron:
             model_path: str → core model path
             model_info: dict[str. str] → model metadata dictionary
 
-        return:
-            None
+        output:
+            entity_id: str → an `ID` to find the `OBJECT` in the `CACHE`
 
         time complexity → o(e*n*f)
         """
@@ -74,44 +76,56 @@ class SimplePerceptron:
         weights = model['parameters']['weights']
         bias = model['parameters']['bias']
 
-        entity_id = self.perceptron_cache.add_perceptron(weights=weights, bias=bias)
-
         # initialize the means and standar desviation to normalize the fatures
         means = model['normalization']['means']
         standar_desviation = model['normalization']['standar_desviation']
 
         standarized_dataset, means, standar_desviation = self._zscore_dataset(dataset, means, standar_desviation)
+
+        entity_id = self.perceptron_cache.add_perceptron(weights=weights, bias=bias, standar_desviation=standar_desviation, means=means)
         
         self._training_loop(epochs=epochs, standarized_dataset=standarized_dataset, learning_rate=learning_rate, dataset=dataset, patience=patience, means=means, standar_desviation=standar_desviation, labeled_dataset_path=labeled_dataset_path, model_path=model_path, model=model, model_info=model_info, entity_id=entity_id)
+        
+        return entity_id
 
-    def inference(self, model_path: str, features: list[float]):
+    def inference(self, features: list[float], entity_id: str):
         """
         performs prediction using a saved perceptorn model and input features
 
         args:
-            model_path: str → path to the saved model file
             features: list[float] → input features vector
+            entity_id: str → recive an `ID` to find the `OBJECT` in the `CACHE`
 
         output:
             int → prediction value (0 or 1)
 
         time complexity → o(f)
         """
-        model = self._load_json(model_path)
-
-        # start the weights and bias with the loaded model
-        weights = model['parameters']['weights']
-        bias = model['parameters']['bias']
-
-        entity_id = self.perceptron_cache.add_perceptron(weights=weights, bias=bias)
+        model = self.perceptron_cache.get_perceptron(entity_id)
 
         # initialize the means and standar desviation to normalize the fatures
-        means = model['normalization']['means']
-        stds = model['normalization']['standar_desviation']
+        means = model.means
+        stds = model.standar_desviation
 
         # make a prediction and return the result
         y_pred = self._linear_combination(self._zscore(means, stds, features), entity_id)
         return self._activation_step(y_pred)
+    
+    def initialize_model(self, model_path: str):
+        """
+        model_path: str → path to the saved model file
+        
+        args:
+            model_path: str → path to the saved model file
+            
+        output:
+            entity_id: str → an `ID` to find the `OBJECT` in the `CACHE`
+            
+        time complexity → o(n)
+        """
+        model = self._load_json(model_path)
+        
+        return self.perceptron_cache.add_perceptron(weights=model['parameters']['weights'], bias=model['parameters']['bias'], means=model['normalization']['means'], standar_desviation=model['normalization']['standar_desviation'])
 
     def _training_loop(self, epochs: int, standarized_dataset: list[dict], learning_rate: float, dataset: list[dict], patience: int, means: list[float], standar_desviation: list[float], labeled_dataset_path: str, model_info: dict[str, any], entity_id: str, model_path: str = None, model: dict[str, any] = None):
         """
@@ -479,10 +493,10 @@ if __name__ == "__main__":
     simple_perceptron = SimplePerceptron(perceptron_cache)
 
     # train the perceptron with specified parameters
-    simple_perceptron.train(epochs=30, patience=3, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_info=model_info)
+    entity_id = simple_perceptron.train(epochs=30, patience=3, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_info=model_info)
 
     # load a saved model and make a prediction
-    prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_10_15.json', features=[0, 1])
+    prediction = simple_perceptron.inference(features=[0, 1], entity_id=entity_id)
     print(prediction)
 
     # define the fine-tuned model metadata

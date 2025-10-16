@@ -181,7 +181,7 @@ model_info = {
 simple_perceptron = SimplePerceptron(perceptron_cache)
 
 # train the perceptron with specified parameters
-simple_perceptron.train(epochs=30, patience=3, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_info=model_info)
+entity_id = simple_perceptron.train(epochs=30, patience=3, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_info=model_info)
 ```
 
 3. Output (a list of `logs` _(epoch, weights, bias, error, and time)_, `early stopping`, and model root):
@@ -202,7 +202,7 @@ Early Stopping
 
 ```python
 # load a saved model and make a prediction
-prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_10_15.json', features=[0, 1])
+prediction = simple_perceptron.inference(features=[0, 1], entity_id=entity_id)
 print(prediction)
 ```
 
