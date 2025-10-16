@@ -39,9 +39,9 @@ class PerceptronCache:
         time complexity → o(1)
         """
         self.lock = Lock()
-        self.cache: dict[str, PerceptronSpec] = {}
+        self.cache: dict[int, PerceptronSpec] = {}
 
-        self.max_length = cache_length
+        self.max_length: int = cache_length
         self.current_idx: int = 1
 
     def add_perceptron(self, weights: list[float], bias: float, means: list[float], standar_desviation: list[float]):
@@ -71,12 +71,12 @@ class PerceptronCache:
 
         return perceptron.entity_id
     
-    def get_perceptron(self, entity_id: str):
+    def get_perceptron(self, entity_id: int):
         """
         get a perceptron with a given id from the `CACHE`
 
         args:
-            entity_id: str → recive an `ID` to find the `OBJECT` in the `CACHE`
+            entity_id: int → recive an `ID` to find the `OBJECT` in the `CACHE`
 
         output:
             PerceptronSpec → perceptron object with an `ID`, `WEIGHTS` and `BIAS`
@@ -86,12 +86,12 @@ class PerceptronCache:
         with self.lock:    
             return self.cache.get(entity_id)
 
-    def remove_perceptron(self, entity_id: str):
+    def remove_perceptron(self, entity_id: int):
         """
         remove a perceptron with a given `ID` from the shared `CACHE`
 
         args:
-            entity_id: str → recive an `ID` to find the `OBJECT` in the `CACHE`
+            entity_id: int → recive an `ID` to find the `OBJECT` in the `CACHE`
 
         output:
             None
@@ -105,12 +105,12 @@ class PerceptronCache:
 
             del self.cache[entity_id]
 
-    def update_perceptron(self, entity_id: str, weights: list[float] = None, bias: float = None, means: list[float] = None, standar_desviation: list[float] = None):
+    def update_perceptron(self, entity_id: int, weights: list[float] = None, bias: float = None, means: list[float] = None, standar_desviation: list[float] = None):
         """
         update the `WEIGHTS` and `BIAS` of the model with a given `ID`
 
         args:
-            entity_id: str → recive an `ID` to find the `OBJECT` in the `CACHE`
+            entity_id: int → recive an `ID` to find the `OBJECT` in the `CACHE`
             weights: list[float] → weights of the perceptron
             bias: float → bias of decision for the model
             means: list[float] = None → means of the dataset columns
