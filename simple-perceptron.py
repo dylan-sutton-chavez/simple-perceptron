@@ -45,32 +45,9 @@ class SimplePerceptron:
         self.weights = [round(uniform(-0.07, 0.07), 8) for _ in range(num_features)]
         self.bias = round(uniform(-0.07, 0.07), 8)
 
-        patience_counter: int = 0
-        total_time: float = 0.0
+        self._training_loop(epochs=epochs, standarized_dataset=standarized_dataset, learning_rate=learning_rate, dataset=dataset, patience=patience, means=means, standar_desviation=standar_desviation, labeled_dataset_path=labeled_dataset_path, model_info=model_info)
 
-        # iterate through each of the epochs
-        for epoch in range(epochs):
-            elapsed_time, has_errors, errors = self._train_one_epoch(standarized_dataset, learning_rate)
-            total_time += elapsed_time
-
-            self._log_epoch_metrics(epoch, epochs, errors, dataset, elapsed_time)
-
-            # early stopping logic, if the model makes no mistakes
-            if has_errors:
-                patience_counter: int = 0 # set to zero the `no-errors` counter
-            
-            else:
-                patience_counter += 1 # increment one the `no-errors` counter
-                if patience_counter >= patience:
-                    print(f"Early Stopping")
-
-                    self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time, means=means, standar_desviation=standar_desviation)
-                    return
-                
-        # if the loop finish without early stopping, save the last epoch model
-        self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time, means=means, standar_desviation=standar_desviation)
-
-    def fine_tuning(self, epochs: int, patience: int, labeled_dataset_path: str, learning_rate: float, model_path: str):
+    def fine_tuning(self, epochs: int, patience: int, labeled_dataset_path: str, learning_rate: float, model_path: str, model_info: dict[str, str]):
         """
         use a core pre-trained model, fine-tune with more data and save the model 
 
@@ -80,6 +57,7 @@ class SimplePerceptron:
             labeled_dataset_path: str → dataset file path
             learning_rate: float → weight update rate
             model_path: str → core model path
+            model_info: dict[str. str] → model metadata dictionary
 
         return:
             None
@@ -98,31 +76,8 @@ class SimplePerceptron:
         standar_desviation = model['normalization']['standar_desviation']
 
         standarized_dataset, means, standar_desviation = self._zscore_dataset(dataset, means, standar_desviation)
-
-        patience_counter: int = 0
-        total_time: float = 0.0
-
-        # iterate through each of the epochs
-        for epoch in range(epochs):
-            elapsed_time, has_errors, errors = self._train_one_epoch(standarized_dataset, learning_rate)
-            total_time += elapsed_time
-
-            self._log_epoch_metrics(epoch, epochs, errors, dataset, elapsed_time)
-
-            # early stopping logic, if the model makes no mistakes
-            if has_errors:
-                patience_counter: int = 0 # set to zero the `no-errors` counter
-
-            else:
-                patience_counter += 1 # increment one the `no-errors` counter
-                if patience_counter >= patience:
-                    print(f"Early Stopping")
-
-                    self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time, means=means, standar_desviation=standar_desviation, past_model_path=model_path, past_model=model)
-                    return
-                
-        # if the loop finish without early stopping, save the last epoch model
-        self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time, means=means, standar_desviation=standar_desviation, past_model_path=model_path, past_model=model)
+        
+        self._training_loop(epochs=epochs, standarized_dataset=standarized_dataset, learning_rate=learning_rate, dataset=dataset, patience=patience, means=means, standar_desviation=standar_desviation, labeled_dataset_path=labeled_dataset_path, model_path=model_path, model=model, model_info=model_info)
 
     def inference(self, model_path: str, features: list[float]):
         """
@@ -153,6 +108,52 @@ class SimplePerceptron:
         # make a prediction and return the result
         y_pred = self._linear_combination(zscore(means, stds, features))
         return self._activation_step(y_pred)
+
+    def _training_loop(self, epochs: int, standarized_dataset: list[dict], learning_rate: float, dataset: list[dict], patience: int, means: list[float], standar_desviation: list[float], labeled_dataset_path: str, model_info: dict[str, any], model_path: str = None, model: dict[str, any] = None):
+        """
+        training loop with number of epochs where train the model whit a given dataset
+
+        args:
+            epochs: int → training loop iterations
+            standarized_dataset: list[dict] → calibrated dataset using z-score
+            learning_rate: float → weight update rate
+            dataset: list[dict] → core dataset pre-standarized
+            patience: int → tolerance without improvement
+            means: list[float] → mean of the dataset columns
+            standar_desviation: list[float] → standar desviation of the dataset columns
+            labeled_dataset_path: str → dataset file path
+            model_path: str = None → past model file path
+            model_info: dict[str. str] → model metadata dictionary
+
+        output:
+            None
+
+        time complexity → o(e*n*f)
+        """
+        patience_counter: int = 0
+        total_time: float = 0.0
+
+        # iterate through each of the epochs
+        for epoch in range(epochs):
+            elapsed_time, has_errors, errors = self._train_one_epoch(standarized_dataset, learning_rate)
+            total_time += elapsed_time
+
+            self._log_epoch_metrics(epoch, epochs, errors, dataset, elapsed_time)
+
+            # early stopping logic, if the model makes no mistakes
+            if has_errors:
+                patience_counter: int = 0 # set to zero the `no-errors` counter
+
+            else:
+                patience_counter += 1 # increment one the `no-errors` counter
+                if patience_counter >= patience:
+                    print(f"Early Stopping")
+
+                    self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time, means=means, standar_desviation=standar_desviation, past_model_path=model_path, past_model=model)
+                    return
+                
+        # if the loop finish without early stopping, save the last epoch model
+        self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time, means=means, standar_desviation=standar_desviation, past_model_path=model_path, past_model=model)
 
     def _train_one_epoch(self, normalized_dataset: list[dict], learning_rate: float):
         """
@@ -440,15 +441,15 @@ if __name__ == "__main__":
     simple_perceptron.train(epochs=30, patience=3, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_info=model_info)
 
     # load a saved model and make a prediction
-    prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_10_14.json', features=[0, 1])
+    prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_10_15.json', features=[0, 1])
     print(prediction)
 
     # define the fine-tuned model metadata
     model_info = {
-        'model_name': "Simple Perceptron", 
+        'model_name': "Simple Perceptron Tuned", 
         'description': "Fine-tuned simple perceptron using the gate `OR`", 
         'author': "Dylan Sutton Chavez"
     }
 
     # make fine-tuning to the past model
-    simple_perceptron.fine_tuning(epochs=10, patience=2, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_path='simple-perceptron.2025_10_14.json')
+    simple_perceptron.fine_tuning(epochs=10, patience=2, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_path='simple-perceptron.2025_10_15.json', model_info=model_info)

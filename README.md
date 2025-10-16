@@ -167,41 +167,40 @@ The `SimplePerceptron` module implements a complete cycle of the training and in
 2. Execute the training model module:
 
 ```python
-    # define the model metadata
-    model_info = {
-        'model_name': "Simple Perceptron", 
-        'description': "A simple perceptron trained with the gate `OR`", 
-        'author': "Dylan Sutton Chavez"
-    }
+# define the model metadata
+model_info = {
+    'model_name': "Simple Perceptron", 
+    'description': "A simple perceptron trained with the gate `OR`", 
+    'author': "Dylan Sutton Chavez"
+}
 
-    # initialize the SimplePerceptron class
-    simple_perceptron = SimplePerceptron()
+# initialize the SimplePerceptron class
+simple_perceptron = SimplePerceptron()
 
-    # train the perceptron with specified parameters
-    simple_perceptron.train(epochs=30, patience=3, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_info=model_info)
+# train the perceptron with specified parameters
+simple_perceptron.train(epochs=30, patience=3, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_info=model_info)
 ```
 
 3. Output (a list of `logs` _(epoch, weights, bias, error, and time)_, `early stopping`, and model root):
 
 ```txt
 Epoch 1/30
-    Weights: [0.4995584124598852, 0.503278592459885] | Bias: 0.69950886 | Error: 0.75 | Time: 0.0168
+    Weights: [0.5974724124598851, 0.5472716124598853] | Bias: 0.71221679 | Error: 0.75 | Time: 0.0112
 Epoch 2/30
-    Weights: [0.4995584124598852, 0.503278592459885] | Bias: 0.69950886 | Error: 0.0 | Time: 0.0115
+    Weights: [0.5974724124598851, 0.5472716124598853] | Bias: 0.71221679 | Error: 0.0 | Time: 0.0075
 Epoch 3/30
-    Weights: [0.4995584124598852, 0.503278592459885] | Bias: 0.69950886 | Error: 0.0 | Time: 0.0118
+    Weights: [0.5974724124598851, 0.5472716124598853] | Bias: 0.71221679 | Error: 0.0 | Time: 0.0078
 Epoch 4/30
-    Weights: [0.4995584124598852, 0.503278592459885] | Bias: 0.69950886 | Error: 0.0 | Time: 0.0113
+    Weights: [0.5974724124598851, 0.5472716124598853] | Bias: 0.71221679 | Error: 0.0 | Time: 0.00460001
 Early Stopping
-Model saved as `simple-perceptron.2025_10_14.json`
 ```
 
 4. You can make inference with the trained model:
 
 ```python
-    # load a saved model and make a prediction
-    prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_10_14.json', features=[0, 1])
-    print(prediction)
+# load a saved model and make a prediction
+prediction = simple_perceptron.inference(model_path='simple-perceptron.2025_10_15.json', features=[0, 1])
+print(prediction)
 ```
 
 5. Output (this means the input `[0, 1]` was classified as an `"OR = 1"`):
@@ -215,24 +214,24 @@ Model saved as `simple-perceptron.2025_10_14.json`
 ```python
 # define the fine-tuned model metadata
 model_info = {
-    'model_name': "Simple Perceptron", 
+    'model_name': "Simple Perceptron Tuned", 
     'description': "Fine-tuned simple perceptron using the gate `OR`", 
     'author': "Dylan Sutton Chavez"
 }
 
 # make fine-tuning to the past model
-simple_perceptron.fine_tuning(epochs=10, patience=2, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_path='simple-perceptron.2025_10_14.json')
+simple_perceptron.fine_tuning(epochs=10, patience=2, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_path='simple-perceptron.2025_10_15.json', model_info=model_info)
 ```
 
 7. And we recive (output):
 
 ```txt
 Epoch 1/10
-    Weights: [0.4995584124598852, 0.503278592459885] | Bias: 0.69950886 | Error: 0.0 | Time: 0.0195
+    Weights: [0.5974724124598851, 0.5472716124598853] | Bias: 0.71221679 | Error: 0.0 | Time: 0.00640001
 Epoch 2/10
-    Weights: [0.4995584124598852, 0.503278592459885] | Bias: 0.69950886 | Error: 0.0 | Time: 0.0133
+    Weights: [0.5974724124598851, 0.5472716124598853] | Bias: 0.71221679 | Error: 0.0 | Time: 0.00789999
 Early Stopping
-Model saved as `simple-perceptron.2025_10_14.json`
+Model saved as `simple-perceptron-tuned.2025_10_15.json`
 ```
 
 > In this case we are using the same dataset, but we can use the set of your preference to make the fine-tuning (using the same scale, dimensions and coherent-set)
