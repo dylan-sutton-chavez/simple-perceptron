@@ -1,12 +1,12 @@
-from random import choice
 from threading import Lock
 
 class PerceptronSpec:
-    def __init__(self, weights: list[float], bias: float, means: list[float] = None, standar_desviation: list[float] = None):
+    def __init__(self, current_idx: int, weights: list[float], bias: float, means: list[float] = None, standar_desviation: list[float] = None):
         """
         create an `entity identifier` and initialize the `weights` and `bias` as an object
 
         args:
+            current_idx: int → unique index for the cache elements
             weights: list[float] → weights of the perceptron
             bias: float → bias of decision for the model
             means: list[float] = None → means of the dataset columns
@@ -17,7 +17,7 @@ class PerceptronSpec:
 
         time complexity → o(1)
         """
-        self.entity_id: str = ''.join(choice('asdfghjklq0348571296') for _ in range(9)) # generate a random entity identifier with a length of 9
+        self.entity_id: int = current_idx
         
         self.weights: list[float] = weights
         self.bias: float = bias
@@ -42,6 +42,7 @@ class PerceptronCache:
         self.cache: dict[str, PerceptronSpec] = {}
 
         self.max_length = cache_length
+        self.current_idx: int = 1
 
     def add_perceptron(self, weights: list[float], bias: float, means: list[float], standar_desviation: list[float]):
         """
@@ -58,13 +59,15 @@ class PerceptronCache:
 
         time comlexity → o(1)
         """
-        perceptron: PerceptronSpec = PerceptronSpec(weights, bias, means, standar_desviation) # create a new perceptron object
+        perceptron: PerceptronSpec = PerceptronSpec(self.current_idx, weights, bias, means, standar_desviation) # create a new perceptron object
 
         self._check_length()
         
         with self.lock:
             # save into a dict the perceptron with the entity id as an identifier
             self.cache[perceptron.entity_id] = perceptron
+
+        self.current_idx += 1
 
         return perceptron.entity_id
     
