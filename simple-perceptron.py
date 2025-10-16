@@ -6,19 +6,19 @@ from re import sub
 from cache import PerceptronCache
 
 class SimplePerceptron:
-    def __init__(self):
+    def __init__(self, perceptron_cache: PerceptronCache):
         """
-        initialize a cache object to create a vertical-scalable architecture
+        parse a cache object to create a vertical-scalable architecture
 
         args:
-            None
+            perceptron_cache: PerceptronCache → parse a created cache object
 
         output:
             None
 
         time complexity → o(1)
         """
-        self.perceptron_cache = PerceptronCache()
+        self.perceptron_cache: PerceptronCache = perceptron_cache
 
     def train(self, epochs: int, patience: int, labeled_dataset_path: str, learning_rate: float, model_info: dict[str, str]):
         """
@@ -469,6 +469,9 @@ class SimplePerceptron:
 if __name__ == "__main__":
     """execute this block only when the script is run directly"""
 
+    # create a cache object
+    perceptron_cache = PerceptronCache()
+
     # define the model metadata
     model_info = {
         'model_name': "Simple Perceptron", 
@@ -477,7 +480,7 @@ if __name__ == "__main__":
     }
 
     # initialize the SimplePerceptron class
-    simple_perceptron = SimplePerceptron()
+    simple_perceptron = SimplePerceptron(perceptron_cache)
 
     # train the perceptron with specified parameters
     simple_perceptron.train(epochs=30, patience=3, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_info=model_info)

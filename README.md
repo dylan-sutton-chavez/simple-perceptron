@@ -167,6 +167,9 @@ The `SimplePerceptron` module implements a complete cycle of the training and in
 2. Execute the training model module:
 
 ```python
+# create a cache object
+perceptron_cache = PerceptronCache()
+
 # define the model metadata
 model_info = {
     'model_name': "Simple Perceptron", 
@@ -175,7 +178,7 @@ model_info = {
 }
 
 # initialize the SimplePerceptron class
-simple_perceptron = SimplePerceptron()
+simple_perceptron = SimplePerceptron(perceptron_cache)
 
 # train the perceptron with specified parameters
 simple_perceptron.train(epochs=30, patience=3, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_info=model_info)
