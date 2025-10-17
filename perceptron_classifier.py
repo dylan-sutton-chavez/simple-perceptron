@@ -3,7 +3,7 @@ from random import uniform
 from time import strftime, localtime, perf_counter
 from re import sub
 
-from cache import PerceptronCache
+from model_cache import PerceptronCache
 
 class SimplePerceptron:
     def __init__(self, perceptron_cache: PerceptronCache):

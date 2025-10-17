@@ -1,7 +1,7 @@
 from threading import Lock
 from collections import OrderedDict
 
-class PerceptronSpec:
+class CachedModel:
     def __init__(self, current_idx: int, weights: list[float], bias: float, means: list[float] = None, standard_deviation: list[float] = None):
         """
         create an `entity identifier` and initialize the `weights` and `bias` as an object
@@ -60,7 +60,7 @@ class PerceptronCache:
 
         time comlexity → o(1)
         """
-        perceptron = PerceptronSpec(self.current_idx, weights, bias, means, standard_deviation) # create a new perceptron object
+        perceptron = CachedModel(self.current_idx, weights, bias, means, standard_deviation) # create a new perceptron object
 
         self._check_length()
         
