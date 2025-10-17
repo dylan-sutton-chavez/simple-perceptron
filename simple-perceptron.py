@@ -38,7 +38,7 @@ class SimplePerceptron:
         """
         # load the dataset, and standarize the features
         dataset = self._load_json(file_path=labeled_dataset_path)
-        standarized_dataset, means, standar_desviation = self._zscore_dataset(dataset)
+        standarized_dataset, means, standard_deviation = self._zscore_dataset(dataset)
 
         num_features = len(dataset[0]['features'])
 
@@ -46,9 +46,9 @@ class SimplePerceptron:
         weights = [round(uniform(-0.07, 0.07), 8) for _ in range(num_features)]
         bias = round(uniform(-0.07, 0.07), 8)
 
-        entity_id = self.perceptron_cache.add_perceptron(weights=weights, bias=bias, standar_desviation=standar_desviation, means=means)
+        entity_id = self.perceptron_cache.add_perceptron(weights=weights, bias=bias, standard_deviation=standard_deviation, means=means)
 
-        self._training_loop(epochs=epochs, standarized_dataset=standarized_dataset, learning_rate=learning_rate, dataset=dataset, patience=patience, means=means, standar_desviation=standar_desviation, labeled_dataset_path=labeled_dataset_path, model_info=model_info, entity_id=entity_id)
+        self._training_loop(epochs=epochs, standarized_dataset=standarized_dataset, learning_rate=learning_rate, dataset=dataset, patience=patience, means=means, standard_deviation=standard_deviation, labeled_dataset_path=labeled_dataset_path, model_info=model_info, entity_id=entity_id)
 
         return entity_id
 
@@ -78,13 +78,13 @@ class SimplePerceptron:
 
         # initialize the means and standar desviation to normalize the fatures
         means = model['normalization']['means']
-        standar_desviation = model['normalization']['standar_desviation']
+        standard_deviation = model['normalization']['standard_deviation']
 
-        standarized_dataset, means, standar_desviation = self._zscore_dataset(dataset, means, standar_desviation)
+        standarized_dataset, means, standard_deviation = self._zscore_dataset(dataset, means, standard_deviation)
 
-        entity_id = self.perceptron_cache.add_perceptron(weights=weights, bias=bias, standar_desviation=standar_desviation, means=means)
+        entity_id = self.perceptron_cache.add_perceptron(weights=weights, bias=bias, standard_deviation=standard_deviation, means=means)
         
-        self._training_loop(epochs=epochs, standarized_dataset=standarized_dataset, learning_rate=learning_rate, dataset=dataset, patience=patience, means=means, standar_desviation=standar_desviation, labeled_dataset_path=labeled_dataset_path, model_path=model_path, model=model, model_info=model_info, entity_id=entity_id)
+        self._training_loop(epochs=epochs, standarized_dataset=standarized_dataset, learning_rate=learning_rate, dataset=dataset, patience=patience, means=means, standard_deviation=standard_deviation, labeled_dataset_path=labeled_dataset_path, model_path=model_path, model=model, model_info=model_info, entity_id=entity_id)
         
         return entity_id
 
@@ -105,7 +105,7 @@ class SimplePerceptron:
 
         # initialize the means and standar desviation to normalize the fatures
         means = model.means
-        stds = model.standar_desviation
+        stds = model.standard_deviation
 
         # make a prediction and return the result
         y_pred = self._linear_combination(self._zscore(means, stds, features), entity_id)
@@ -125,9 +125,9 @@ class SimplePerceptron:
         """
         model = self._load_json(model_path)
         
-        return self.perceptron_cache.add_perceptron(weights=model['parameters']['weights'], bias=model['parameters']['bias'], means=model['normalization']['means'], standar_desviation=model['normalization']['standar_desviation'])
+        return self.perceptron_cache.add_perceptron(weights=model['parameters']['weights'], bias=model['parameters']['bias'], means=model['normalization']['means'], standard_deviation=model['normalization']['standard_deviation'])
 
-    def _training_loop(self, epochs: int, standarized_dataset: list[dict], learning_rate: float, dataset: list[dict], patience: int, means: list[float], standar_desviation: list[float], labeled_dataset_path: str, model_info: dict[str, any], entity_id: str, model_path: str = None, model: dict[str, any] = None):
+    def _training_loop(self, epochs: int, standarized_dataset: list[dict], learning_rate: float, dataset: list[dict], patience: int, means: list[float], standard_deviation: list[float], labeled_dataset_path: str, model_info: dict[str, any], entity_id: str, model_path: str = None, model: dict[str, any] = None):
         """
         training loop with number of epochs where train the model whit a given dataset
 
@@ -138,7 +138,7 @@ class SimplePerceptron:
             dataset: list[dict] → core dataset pre-standarized
             patience: int → tolerance without improvement
             means: list[float] → mean of the dataset columns
-            standar_desviation: list[float] → standar desviation of the dataset columns
+            standard_deviation: list[float] → standar desviation of the dataset columns
             labeled_dataset_path: str → dataset file path
             model_path: str = None → past model file path
             model_info: dict[str. str] → model metadata dictionary
@@ -168,11 +168,11 @@ class SimplePerceptron:
                 if patience_counter >= patience:
                     print(f"Early Stopping")
 
-                    self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time, means=means, standar_desviation=standar_desviation, past_model_path=model_path, past_model=model, entity_id=entity_id)
+                    self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time, means=means, standard_deviation=standard_deviation, past_model_path=model_path, past_model=model, entity_id=entity_id)
                     return
                 
         # if the loop finish without early stopping, save the last epoch model
-        self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time, means=means, standar_desviation=standar_desviation, past_model_path=model_path, past_model=model, entity_id=entity_id)
+        self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time, means=means, standard_deviation=standard_deviation, past_model_path=model_path, past_model=model, entity_id=entity_id)
 
     def _train_one_epoch(self, normalized_dataset: list[dict], learning_rate: float, entity_id: str):
         """
@@ -239,7 +239,7 @@ class SimplePerceptron:
 
         print(f"Epoch {epoch + 1}/{epochs}\n    Weights: {perceptron.weights} | Bias: {round(perceptron.bias, 8)} | Error: {len(errors) / len(dataset)} | Time: {round(elapsed_time * 1000, 8)}")
 
-    def _save_model(self, model_info: dict[str, str], epochs: int, learning_rate: int, dataset_path: str, total_time: float, means: list[float], standar_desviation: list[float], entity_id: str, past_model_path: str = None, past_model: dict[str, any] = None):
+    def _save_model(self, model_info: dict[str, str], epochs: int, learning_rate: int, dataset_path: str, total_time: float, means: list[float], standard_deviation: list[float], entity_id: str, past_model_path: str = None, past_model: dict[str, any] = None):
         """
         saves perceptron model, parameters, and training metadata to `JSON`
 
@@ -250,7 +250,7 @@ class SimplePerceptron:
             dataset_path: str → path to training dataset
             total_time: float → total training time in seconds
             means: list[float] → mean of the dataset columns
-            standar_desviation: list[float] → standar desviation of the dataset columns
+            standard_deviation: list[float] → standar desviation of the dataset columns
             past_model: dict[str, any] = None → past model metadata (name, created_at, epochs,...)
             past_model_path: str = None → past model file path
             entity_id: str → recive an `ID` of a perceptron model
@@ -275,7 +275,7 @@ class SimplePerceptron:
 
             "normalization": {
                 "means": means,
-                "standar_desviation": standar_desviation
+                "standard_deviation": standard_deviation
             },
 
             "training": {
@@ -360,13 +360,13 @@ class SimplePerceptron:
 
         self.perceptron_cache.update_perceptron(entity_id=entity_id, weights=weights, bias=bias)
 
-    def _zscore(self, means: list[float], standar_desviation: list[float], features: list[float]):
+    def _zscore(self, means: list[float], standard_deviation: list[float], features: list[float]):
         """
         scale the features in the range of `[-3, 3]` with a given means, and standar desviation lists
 
         args:
             means: list[float] → mean of the dataset columns
-            standar_desviation: list[float] → standar desviation of the dataset columns
+            standard_deviation: list[float] → standar desviation of the dataset columns
             features: list[float] → receive a vector of features to scale
 
         return:
@@ -377,21 +377,21 @@ class SimplePerceptron:
         maths:
             zᵢ = (xᵢ - μ) / σ
         """
-        return [(x - means[i]) / standar_desviation[i] for i, x in enumerate(features)]
+        return [(x - means[i]) / standard_deviation[i] for i, x in enumerate(features)]
 
-    def _zscore_dataset(self, dataset: dict[str, any], means: list[float] = None, standar_desviation: list[float] = None):
+    def _zscore_dataset(self, dataset: dict[str, any], means: list[float] = None, standard_deviation: list[float] = None):
         """
         normalize the dataset features in the range of `[-3, 3]`
 
         args:
             features: dict[str, any] → not scalled dataset
             means: list[float] = None → given means
-            standar_desviation: list[float] = None → a list of the standar desviation to scale the data whit means and z-score
+            standard_deviation: list[float] = None → a list of the standar desviation to scale the data whit means and z-score
 
         return:
             dict[str, any] → normalized features in the range of `-3`, and `3`
             means: list[float] → mean of the dataset columns
-            standar_desviation: list[float] → standar desviation of the dataset columns
+            standard_deviation: list[float] → standar desviation of the dataset columns
 
         time complexity → o(n*f)
         
@@ -400,7 +400,7 @@ class SimplePerceptron:
             σ = √( Σᵢ₌₁ⁿ (xᵢ - μ)^2 / n )
         """
         # review if is receiving a given means, and standar desviation
-        if  means is None and standar_desviation is None:
+        if  means is None and standard_deviation is None:
             num_features: int = len(dataset[0]['features'])
             num_samples: int = len(dataset)
 
@@ -411,7 +411,7 @@ class SimplePerceptron:
             ]
 
             # compute the standar desviation for each feature column
-            standar_desviation: list[float] = []
+            standard_deviation: list[float] = []
             for i in range(num_features):
                 column_values: list[float] = [example['features'][i] for example in dataset]
 
@@ -423,19 +423,19 @@ class SimplePerceptron:
                 if std_dev == 0:
                     std_dev: float = 1
 
-                standar_desviation.append(std_dev)
+                standard_deviation.append(std_dev)
 
         # create a new dataset with the normalized features using z-score
         standardized_dataset: list = []
         for example in dataset:
             standardized_example: dict[str, any] = {
-                'features': self._zscore(means, standar_desviation, example['features']),
+                'features': self._zscore(means, standard_deviation, example['features']),
                 'label': example['label']
             }
 
             standardized_dataset.append(standardized_example)
 
-        return standardized_dataset, means, standar_desviation
+        return standardized_dataset, means, standard_deviation
 
     def _activation_step(self, value: float):
         """

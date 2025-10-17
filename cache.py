@@ -2,7 +2,7 @@ from threading import Lock
 from collections import OrderedDict
 
 class PerceptronSpec:
-    def __init__(self, current_idx: int, weights: list[float], bias: float, means: list[float] = None, standar_desviation: list[float] = None):
+    def __init__(self, current_idx: int, weights: list[float], bias: float, means: list[float] = None, standard_deviation: list[float] = None):
         """
         create an `entity identifier` and initialize the `weights` and `bias` as an object
 
@@ -11,7 +11,7 @@ class PerceptronSpec:
             weights: list[float] → weights of the perceptron
             bias: float → bias of decision for the model
             means: list[float] = None → means of the dataset columns
-            standar_desviation: list[float] = None → standar desviation of the dataset columns
+            standard_deviation: list[float] = None → standar desviation of the dataset columns
 
         output:
             None
@@ -24,7 +24,7 @@ class PerceptronSpec:
         self.bias: float = bias
 
         self.means: list[float] = means
-        self.standar_desviation: list[float] = standar_desviation
+        self.standard_deviation: list[float] = standard_deviation
 
 class PerceptronCache:
     def __init__(self, cache_length: int = None):
@@ -45,7 +45,7 @@ class PerceptronCache:
         self.max_length: int = cache_length
         self.current_idx: int = 1
 
-    def add_perceptron(self, weights: list[float], bias: float, means: list[float], standar_desviation: list[float]):
+    def add_perceptron(self, weights: list[float], bias: float, means: list[float], standard_deviation: list[float]):
         """
         `add` a simple perceptron to the `CACHE`
 
@@ -53,14 +53,14 @@ class PerceptronCache:
             weights: list[float] → weights of the perceptron
             bias: float → bias of decision for the model
             means: list[float] → means of the dataset columns
-            standar_desviation: list[float] → standar desviation of the dataset columns
+            standard_deviation: list[float] → standar desviation of the dataset columns
 
         output:
             str → the id of the object
 
         time comlexity → o(1)
         """
-        perceptron = PerceptronSpec(self.current_idx, weights, bias, means, standar_desviation) # create a new perceptron object
+        perceptron = PerceptronSpec(self.current_idx, weights, bias, means, standard_deviation) # create a new perceptron object
 
         self._check_length()
         
@@ -107,7 +107,7 @@ class PerceptronCache:
 
             del self.cache[entity_id]
 
-    def update_perceptron(self, entity_id: int, weights: list[float] = None, bias: float = None, means: list[float] = None, standar_desviation: list[float] = None):
+    def update_perceptron(self, entity_id: int, weights: list[float] = None, bias: float = None, means: list[float] = None, standard_deviation: list[float] = None):
         """
         update the `WEIGHTS` and `BIAS` of the model with a given `ID`
 
@@ -116,7 +116,7 @@ class PerceptronCache:
             weights: list[float] → weights of the perceptron
             bias: float → bias of decision for the model
             means: list[float] = None → means of the dataset columns
-            standar_desviation: list[float] = None → standar desviation of the dataset columns
+            standard_deviation: list[float] = None → standar desviation of the dataset columns
 
         ouput:
             None
@@ -138,8 +138,8 @@ class PerceptronCache:
             if means is not None:
                 perceptron.means = means
             # verify if received the standar desviation and update
-            if standar_desviation is not None:
-                perceptron.standar_desviation = standar_desviation
+            if standard_deviation is not None:
+                perceptron.standard_deviation = standard_deviation
 
     def _check_length(self):
         """
@@ -165,7 +165,7 @@ if __name__ == "__main__":
     perceptron_cache = PerceptronCache(cache_length=7)
 
     # add a perceptron to the shared cache
-    id = perceptron_cache.add_perceptron(weights=[0.6326, 0.5294], bias=0.682, means=[0.5, 0.5], standar_desviation=[0.5773, 0.5773])
+    id = perceptron_cache.add_perceptron(weights=[0.6326, 0.5294], bias=0.682, means=[0.5, 0.5], standard_deviation=[0.5773, 0.5773])
     print(f'The `ID` of the created perceptron its: {id}')
 
     # get a perceptron with a given id
