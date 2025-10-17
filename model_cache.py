@@ -26,7 +26,7 @@ class CachedModel:
         self.means: list[float] = means
         self.standard_deviation: list[float] = standard_deviation
 
-class PerceptronCache:
+class ModelCache:
     def __init__(self, cache_length: int = None):
         """
         initialize the cache dict in memory with lock for the race conditions
@@ -162,7 +162,7 @@ if __name__ == "__main__":
     """execute this block only when the script is run directly"""
 
     # initialize the shared perceptron cache
-    perceptron_cache = PerceptronCache(cache_length=7)
+    perceptron_cache = ModelCache(cache_length=7)
 
     # add a perceptron to the shared cache
     id = perceptron_cache.add_perceptron(weights=[0.6326, 0.5294], bias=0.682, means=[0.5, 0.5], standard_deviation=[0.5773, 0.5773])

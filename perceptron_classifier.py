@@ -3,22 +3,22 @@ from random import uniform
 from time import strftime, localtime, perf_counter
 from re import sub
 
-from model_cache import PerceptronCache
+from model_cache import ModelCache
 
 class SimplePerceptron:
-    def __init__(self, perceptron_cache: PerceptronCache):
+    def __init__(self, perceptron_cache: ModelCache):
         """
         parse a cache object to create a vertical-scalable architecture
 
         args:
-            perceptron_cache: PerceptronCache → parse a created cache object
+            perceptron_cache: ModelCache → parse a created cache object
 
         output:
             None
 
         time complexity → o(1)
         """
-        self.perceptron_cache: PerceptronCache = perceptron_cache
+        self.perceptron_cache: ModelCache = perceptron_cache
 
     def train(self, epochs: int, patience: int, labeled_dataset_path: str, learning_rate: float, model_info: dict[str, str]):
         """
@@ -480,7 +480,7 @@ if __name__ == "__main__":
     """execute this block only when the script is run directly"""
 
     # create a cache object
-    perceptron_cache = PerceptronCache(cache_length=10)
+    perceptron_cache = ModelCache(cache_length=10)
 
     # define the model metadata
     model_info = {
