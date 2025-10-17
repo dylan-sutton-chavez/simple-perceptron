@@ -2,6 +2,7 @@ from json import load, dump
 from random import uniform
 from time import strftime, localtime, perf_counter
 from re import sub
+
 from numpy import dot
 
 from model_cache import ModelCache
@@ -335,7 +336,7 @@ class SimplePerceptron:
 
         # vectorized dot product for long vectors
         if len(input_features) >= 20:
-            dot(perceptron.weights, input_features) + perceptron.bias
+            return dot(perceptron.weights, input_features) + perceptron.bias
 
         return sum(w * x for w, x in zip(perceptron.weights, input_features)) + perceptron.bias
     
