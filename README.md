@@ -145,7 +145,7 @@ $$
 
 ## 2. Simple Perceptron Module
 
-The `SimplePerceptron` module implements a complete cycle of the training and inference for this model, implemented from zero, without libraries, just a dot product for long vectors (>19 length).
+The `SimplePerceptron` module implements a complete cycle of the training and inference for this model, implemented from zero, without libraries. Just a dot product for long vectors (>19 length, obtained whit benchmarks).
 
 ### 2.1 Requirements
 
