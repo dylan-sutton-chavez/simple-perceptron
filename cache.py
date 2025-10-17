@@ -1,4 +1,5 @@
 from threading import Lock
+from collections import OrderedDict
 
 class PerceptronSpec:
     def __init__(self, current_idx: int, weights: list[float], bias: float, means: list[float] = None, standar_desviation: list[float] = None):
@@ -39,7 +40,7 @@ class PerceptronCache:
         time complexity → o(1)
         """
         self.lock = Lock()
-        self.cache: dict[int, PerceptronSpec] = {}
+        self.cache = OrderedDict()
 
         self.max_length: int = cache_length
         self.current_idx: int = 1
@@ -59,7 +60,7 @@ class PerceptronCache:
 
         time comlexity → o(1)
         """
-        perceptron: PerceptronSpec = PerceptronSpec(self.current_idx, weights, bias, means, standar_desviation) # create a new perceptron object
+        perceptron = PerceptronSpec(self.current_idx, weights, bias, means, standar_desviation) # create a new perceptron object
 
         self._check_length()
         
@@ -84,7 +85,8 @@ class PerceptronCache:
         time complexity → o(1)
         """
         with self.lock:    
-            return self.cache.get(entity_id)
+            self.cache.move_to_end(entity_id)
+            return self.cache[entity_id]
 
     def remove_perceptron(self, entity_id: int):
         """
