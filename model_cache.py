@@ -80,7 +80,7 @@ class ModelCache:
             cache_id: int → recive an `ID` to find the `OBJECT` in the `CACHE`
 
         output:
-            PerceptronSpec → perceptron object with an `ID`, `WEIGHTS` and `BIAS`
+            CachedModel → perceptron object with an `ID`, `WEIGHTS` and `BIAS`
         
         time complexity → o(1)
         """
