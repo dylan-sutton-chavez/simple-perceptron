@@ -145,7 +145,7 @@ $$
 
 ## 2. Simple Perceptron Module
 
-The `SimplePerceptron` module implements a complete cycle of the training and inference for this model, implemented from zero, without external libraries _(e.g., NumPy, Sk-learn, PyTorch,...)_.
+The `SimplePerceptron` module implements a complete cycle of the training and inference for this model, implemented from zero, without libraries, just a dot product for long vectors (>19 length).
 
 ### 2.1 Requirements
 
