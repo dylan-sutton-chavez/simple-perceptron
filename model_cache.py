@@ -18,7 +18,7 @@ class CachedModel:
 
         time complexity → o(1)
         """
-        self.entity_id: int = current_idx
+        self.cache_id: int = current_idx
         
         self.weights: list[float] = weights
         self.bias: float = bias
@@ -66,18 +66,18 @@ class ModelCache:
         
         with self.lock:
             # save into a dict the perceptron with the entity id as an identifier
-            self.cache[perceptron.entity_id] = perceptron
+            self.cache[perceptron.cache_id] = perceptron
 
         self.current_idx += 1
 
-        return perceptron.entity_id
+        return perceptron.cache_id
     
-    def get_perceptron(self, entity_id: int):
+    def get_perceptron(self, cache_id: int):
         """
         get a perceptron with a given id from the `CACHE`
 
         args:
-            entity_id: int → recive an `ID` to find the `OBJECT` in the `CACHE`
+            cache_id: int → recive an `ID` to find the `OBJECT` in the `CACHE`
 
         output:
             PerceptronSpec → perceptron object with an `ID`, `WEIGHTS` and `BIAS`
@@ -85,15 +85,15 @@ class ModelCache:
         time complexity → o(1)
         """
         with self.lock:    
-            self.cache.move_to_end(entity_id)
-            return self.cache[entity_id]
+            self.cache.move_to_end(cache_id)
+            return self.cache[cache_id]
 
-    def remove_perceptron(self, entity_id: int):
+    def remove_perceptron(self, cache_id: int):
         """
         remove a perceptron with a given `ID` from the shared `CACHE`
 
         args:
-            entity_id: int → recive an `ID` to find the `OBJECT` in the `CACHE`
+            cache_id: int → recive an `ID` to find the `OBJECT` in the `CACHE`
 
         output:
             None
@@ -102,17 +102,17 @@ class ModelCache:
         """
         with self.lock:
             # validate if the object exists in cache
-            if entity_id not in self.cache:
-                raise ValueError(f"No perceptron found with id {entity_id}")
+            if cache_id not in self.cache:
+                raise ValueError(f"No perceptron found with id {cache_id}")
 
-            del self.cache[entity_id]
+            del self.cache[cache_id]
 
-    def update_perceptron(self, entity_id: int, weights: list[float] = None, bias: float = None, means: list[float] = None, standard_deviation: list[float] = None):
+    def update_perceptron(self, cache_id: int, weights: list[float] = None, bias: float = None, means: list[float] = None, standard_deviation: list[float] = None):
         """
         update the `WEIGHTS` and `BIAS` of the model with a given `ID`
 
         args:
-            entity_id: int → recive an `ID` to find the `OBJECT` in the `CACHE`
+            cache_id: int → recive an `ID` to find the `OBJECT` in the `CACHE`
             weights: list[float] → weights of the perceptron
             bias: float → bias of decision for the model
             means: list[float] = None → means of the dataset columns
@@ -124,10 +124,10 @@ class ModelCache:
         time complexity → o(1)
         """
         with self.lock:
-            perceptron = self.cache.get(entity_id)
+            perceptron = self.cache.get(cache_id)
             # validate if the object exists in cache
             if perceptron is None:
-                raise ValueError(f"No perceptron found with id {entity_id}")
+                raise ValueError(f"No perceptron found with id {cache_id}")
             # verify if received the weights and update
             if weights is not None:
                 perceptron.weights = weights
@@ -170,14 +170,14 @@ if __name__ == "__main__":
 
     # get a perceptron with a given id
     get_id = perceptron_cache.get_perceptron(id)
-    print(f'The object is: {get_id.entity_id}    Current Bias: {get_id.bias}')
+    print(f'The object is: {get_id.cache_id}    Current Bias: {get_id.bias}')
 
     # update the perceptron bias to `1`
-    perceptron_cache.update_perceptron(entity_id=id, bias=1)
+    perceptron_cache.update_perceptron(cache_id=id, bias=1)
 
     # get the perceptorn with the new info
     get_id = perceptron_cache.get_perceptron(id)
-    print(f'The object is: {get_id.entity_id}    Current Bias: {get_id.bias}')
+    print(f'The object is: {get_id.cache_id}    Current Bias: {get_id.bias}')
 
     # delete the perceptron and have an emtpy cache
     perceptron_cache.remove_perceptron(id)

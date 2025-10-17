@@ -20,7 +20,7 @@ class SimplePerceptron:
         """
         self.perceptron_cache: ModelCache = perceptron_cache
 
-    def train(self, epochs: int, patience: int, labeled_dataset_path: str, learning_rate: float, model_info: dict[str, str]):
+    def train(self, epochs: int, patience: int, labeled_dataset_path: str, learning_rate: float, model_metadata: dict[str, str]):
         """
         train perceptron model with early stopping and model saving
 
@@ -29,10 +29,10 @@ class SimplePerceptron:
             patience: int → tolerance without improvement
             labeled_dataset_path: str → dataset file path
             learning_rate: float → weight update rate
-            model_info: dict[str, str] → model metadata dictionary
+            model_metadata: dict[str, str] → model metadata dictionary
 
         output:
-            entity_id: str → an `ID` to find the `OBJECT` in the `CACHE`
+            cache_id: str → an `ID` to find the `OBJECT` in the `CACHE`
 
         time complexity → o(e*n*f)
         """
@@ -46,13 +46,13 @@ class SimplePerceptron:
         weights = [round(uniform(-0.07, 0.07), 8) for _ in range(num_features)]
         bias = round(uniform(-0.07, 0.07), 8)
 
-        entity_id = self.perceptron_cache.add_perceptron(weights=weights, bias=bias, standard_deviation=standard_deviation, means=means)
+        cache_id = self.perceptron_cache.add_perceptron(weights=weights, bias=bias, standard_deviation=standard_deviation, means=means)
 
-        self._training_loop(epochs=epochs, standarized_dataset=standarized_dataset, learning_rate=learning_rate, dataset=dataset, patience=patience, means=means, standard_deviation=standard_deviation, labeled_dataset_path=labeled_dataset_path, model_info=model_info, entity_id=entity_id)
+        self._training_loop(epochs=epochs, standarized_dataset=standarized_dataset, learning_rate=learning_rate, dataset=dataset, patience=patience, means=means, standard_deviation=standard_deviation, labeled_dataset_path=labeled_dataset_path, model_metadata=model_metadata, cache_id=cache_id)
 
-        return entity_id
+        return cache_id
 
-    def fine_tuning(self, epochs: int, patience: int, labeled_dataset_path: str, learning_rate: float, model_path: str, model_info: dict[str, str]):
+    def fine_tuning(self, epochs: int, patience: int, labeled_dataset_path: str, learning_rate: float, model_path: str, model_metadata: dict[str, str]):
         """
         use a core pre-trained model, fine-tune with more data and save the model 
 
@@ -62,10 +62,10 @@ class SimplePerceptron:
             labeled_dataset_path: str → dataset file path
             learning_rate: float → weight update rate
             model_path: str → core model path
-            model_info: dict[str. str] → model metadata dictionary
+            model_metadata: dict[str. str] → model metadata dictionary
 
         output:
-            entity_id: str → an `ID` to find the `OBJECT` in the `CACHE`
+            cache_id: str → an `ID` to find the `OBJECT` in the `CACHE`
 
         time complexity → o(e*n*f)
         """
@@ -82,33 +82,33 @@ class SimplePerceptron:
 
         standarized_dataset, means, standard_deviation = self._zscore_dataset(dataset, means, standard_deviation)
 
-        entity_id = self.perceptron_cache.add_perceptron(weights=weights, bias=bias, standard_deviation=standard_deviation, means=means)
+        cache_id = self.perceptron_cache.add_perceptron(weights=weights, bias=bias, standard_deviation=standard_deviation, means=means)
         
-        self._training_loop(epochs=epochs, standarized_dataset=standarized_dataset, learning_rate=learning_rate, dataset=dataset, patience=patience, means=means, standard_deviation=standard_deviation, labeled_dataset_path=labeled_dataset_path, model_path=model_path, model=model, model_info=model_info, entity_id=entity_id)
+        self._training_loop(epochs=epochs, standarized_dataset=standarized_dataset, learning_rate=learning_rate, dataset=dataset, patience=patience, means=means, standard_deviation=standard_deviation, labeled_dataset_path=labeled_dataset_path, model_path=model_path, model=model, model_metadata=model_metadata, cache_id=cache_id)
         
-        return entity_id
+        return cache_id
 
-    def inference(self, features: list[float], entity_id: str):
+    def inference(self, features: list[float], cache_id: str):
         """
         performs prediction using a saved perceptorn model and input features
 
         args:
             features: list[float] → input features vector
-            entity_id: str → recive an `ID` to find the `OBJECT` in the `CACHE`
+            cache_id: str → recive an `ID` to find the `OBJECT` in the `CACHE`
 
         output:
             int → prediction value (0 or 1)
 
         time complexity → o(f)
         """
-        model = self.perceptron_cache.get_perceptron(entity_id)
+        model = self.perceptron_cache.get_perceptron(cache_id)
 
         # initialize the means and standar desviation to normalize the fatures
         means = model.means
         stds = model.standard_deviation
 
         # make a prediction and return the result
-        y_pred = self._calculate_net_input(self._zscore(means, stds, features), entity_id)
+        y_pred = self._calculate_net_input(self._zscore(means, stds, features), cache_id)
         return self._apply_step_function(y_pred)
     
     def load_model_into_cache(self, model_path: str):
@@ -119,7 +119,7 @@ class SimplePerceptron:
             model_path: str → path to the saved model file
             
         output:
-            entity_id: str → an `ID` to find the `OBJECT` in the `CACHE`
+            cache_id: str → an `ID` to find the `OBJECT` in the `CACHE`
             
         time complexity → o(n)
         """
@@ -127,7 +127,7 @@ class SimplePerceptron:
         
         return self.perceptron_cache.add_perceptron(weights=model['parameters']['weights'], bias=model['parameters']['bias'], means=model['normalization']['means'], standard_deviation=model['normalization']['standard_deviation'])
 
-    def _training_loop(self, epochs: int, standarized_dataset: list[dict], learning_rate: float, dataset: list[dict], patience: int, means: list[float], standard_deviation: list[float], labeled_dataset_path: str, model_info: dict[str, any], entity_id: str, model_path: str = None, model: dict[str, any] = None):
+    def _training_loop(self, epochs: int, standarized_dataset: list[dict], learning_rate: float, dataset: list[dict], patience: int, means: list[float], standard_deviation: list[float], labeled_dataset_path: str, model_metadata: dict[str, any], cache_id: str, model_path: str = None, model: dict[str, any] = None):
         """
         training loop with number of epochs where train the model whit a given dataset
 
@@ -141,8 +141,8 @@ class SimplePerceptron:
             standard_deviation: list[float] → standar desviation of the dataset columns
             labeled_dataset_path: str → dataset file path
             model_path: str = None → past model file path
-            model_info: dict[str. str] → model metadata dictionary
-            entity_id: str → recive an `ID` of a perceptron model
+            model_metadata: dict[str. str] → model metadata dictionary
+            cache_id: str → recive an `ID` of a perceptron model
 
         output:
             None
@@ -154,10 +154,10 @@ class SimplePerceptron:
 
         # iterate through each of the epochs
         for epoch in range(epochs):
-            elapsed_time, has_errors, errors = self._train_one_epoch(standarized_dataset, learning_rate, entity_id)
+            elapsed_time, has_errors, errors = self._train_one_epoch(standarized_dataset, learning_rate, cache_id)
             total_time += elapsed_time
 
-            self._log_epoch_metrics(epoch, epochs, errors, dataset, elapsed_time, entity_id)
+            self._log_epoch_metrics(epoch, epochs, errors, dataset, elapsed_time, cache_id)
 
             # early stopping logic, if the model makes no mistakes
             if has_errors:
@@ -168,20 +168,20 @@ class SimplePerceptron:
                 if patience_counter >= patience:
                     print(f"Early Stopping")
 
-                    self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time, means=means, standard_deviation=standard_deviation, past_model_path=model_path, past_model=model, entity_id=entity_id)
+                    self._save_model(model_metadata=model_metadata, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time, means=means, standard_deviation=standard_deviation, past_model_path=model_path, past_model=model, cache_id=cache_id)
                     return
                 
         # if the loop finish without early stopping, save the last epoch model
-        self._save_model(model_info=model_info, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time, means=means, standard_deviation=standard_deviation, past_model_path=model_path, past_model=model, entity_id=entity_id)
+        self._save_model(model_metadata=model_metadata, epochs=epoch+1, learning_rate=learning_rate, dataset_path=labeled_dataset_path, total_time=total_time, means=means, standard_deviation=standard_deviation, past_model_path=model_path, past_model=model, cache_id=cache_id)
 
-    def _train_one_epoch(self, normalized_dataset: list[dict], learning_rate: float, entity_id: str):
+    def _train_one_epoch(self, normalized_dataset: list[dict], learning_rate: float, cache_id: str):
         """
         execute one training epoch for the dataset
 
         args:
             normalized_dataset: list[dict] → labaled and normalized training dataset
             learning_rate: float → step size for weight updates
-            entity_id: str → recive an `ID` of a perceptron model
+            cache_id: str → recive an `ID` of a perceptron model
         
         output:
             elapsed_time: float → duration of epoch execution 
@@ -201,7 +201,7 @@ class SimplePerceptron:
             y_true = example['label']
 
             # make a prediction with the current model
-            net_input = self._calculate_net_input(features, entity_id)
+            net_input = self._calculate_net_input(features, cache_id)
             y_pred = self._apply_step_function(net_input)
 
             error = y_true - y_pred
@@ -209,7 +209,7 @@ class SimplePerceptron:
             # if the prediction is incorrect, apply the learning rule
             if error != 0:
                 # adjust weights and bias of the model
-                self._update_weights_and_bias(error, features, learning_rate, entity_id)
+                self._update_weights_and_bias(error, features, learning_rate, cache_id)
 
                 has_errors: bool = True
                 errors.append(error)
@@ -218,7 +218,7 @@ class SimplePerceptron:
 
         return elapsed_time, has_errors, errors
 
-    def _log_epoch_metrics(self, epoch: int, epochs: int, errors: list[float], dataset: list[dict], elapsed_time: float, entity_id: str):
+    def _log_epoch_metrics(self, epoch: int, epochs: int, errors: list[float], dataset: list[dict], elapsed_time: float, cache_id: str):
         """
         log epoch metric including `weights`, `bias`, `error`, and `time`
 
@@ -228,23 +228,23 @@ class SimplePerceptron:
             errors: list[float] → misclassified samples in current epoch
             dataset: list[dict] → training dataset used
             elapsed_time: float → epoch execution time
-            entity_id: str → recive an `ID` of a perceptron model
+            cache_id: str → recive an `ID` of a perceptron model
 
         return:
             None
 
         time complexity → o(1)
         """
-        perceptron: object = self.perceptron_cache.get_perceptron(entity_id)
+        perceptron: object = self.perceptron_cache.get_perceptron(cache_id)
 
         print(f"Epoch {epoch + 1}/{epochs}\n    Weights: {perceptron.weights} | Bias: {round(perceptron.bias, 8)} | Error: {len(errors) / len(dataset)} | Time: {round(elapsed_time * 1000, 8)}")
 
-    def _save_model(self, model_info: dict[str, str], epochs: int, learning_rate: int, dataset_path: str, total_time: float, means: list[float], standard_deviation: list[float], entity_id: str, past_model_path: str = None, past_model: dict[str, any] = None):
+    def _save_model(self, model_metadata: dict[str, str], epochs: int, learning_rate: int, dataset_path: str, total_time: float, means: list[float], standard_deviation: list[float], cache_id: str, past_model_path: str = None, past_model: dict[str, any] = None):
         """
         saves perceptron model, parameters, and training metadata to `JSON`
 
         args:
-            model_info: dict[str, str] → model metadata (name, description, author)
+            model_metadata: dict[str, str] → model metadata (name, description, author)
             epochs: int → number of training epochs
             learning_rate: int → learning rate used
             dataset_path: str → path to training dataset
@@ -253,20 +253,20 @@ class SimplePerceptron:
             standard_deviation: list[float] → standar desviation of the dataset columns
             past_model: dict[str, any] = None → past model metadata (name, created_at, epochs,...)
             past_model_path: str = None → past model file path
-            entity_id: str → recive an `ID` of a perceptron model
+            cache_id: str → recive an `ID` of a perceptron model
 
         output:
             None
 
         time complexity → o(f)
         """
-        perceptron: object = self.perceptron_cache.get_perceptron(entity_id)
+        perceptron: object = self.perceptron_cache.get_perceptron(cache_id)
 
         model_dict = {
-            "model_name": model_info['model_name'],
-            "description": model_info['description'],
+            "model_name": model_metadata['model_name'],
+            "description": model_metadata['description'],
             "created_at": strftime("%Y-%m-%d %H:%M:%S", localtime()),
-            "author": model_info['author'],
+            "author": model_metadata['author'],
 
             "parameters": {
                 "weights": perceptron.weights,
@@ -307,20 +307,20 @@ class SimplePerceptron:
 
         # clean the name and make a formated filename
         clean_name = lambda raw: sub(r'\s+', '-', raw.lower())
-        model_filename = f"{clean_name(model_info['model_name'])}.{strftime(("%Y_%m_%d"), localtime())}.json"
+        model_filename = f"{clean_name(model_metadata['model_name'])}.{strftime(("%Y_%m_%d"), localtime())}.json"
 
         # save the model writing in a file
         with open(model_filename, 'w', encoding='utf-8') as model_file:
             dump(model_dict, model_file, indent=4) # save in `JSON` format
             print(f'Model saved as `{model_filename}`')
 
-    def _calculate_net_input(self, input_features: list[float], entity_id: str):
+    def _calculate_net_input(self, input_features: list[float], cache_id: str):
         """
         compute the `weighted` sum of `features` plus `bias`
 
         args:
             input_features: list[float] → input feature vector
-            entity_id: str → recive an `ID` of a perceptron model
+            cache_id: str → recive an `ID` of a perceptron model
 
         output:
             float → linear combination result
@@ -330,11 +330,11 @@ class SimplePerceptron:
         maths:
             z = ∑ᵢ₌₁ⁿ wᵢ·xᵢ + b
         """
-        perceptron: object = self.perceptron_cache.get_perceptron(entity_id)
+        perceptron: object = self.perceptron_cache.get_perceptron(cache_id)
 
         return sum(w * x for w, x in zip(perceptron.weights, input_features)) + perceptron.bias
     
-    def _update_weights_and_bias(self, prediction_error: float, features: list[float], learning_rate: float, entity_id: str):
+    def _update_weights_and_bias(self, prediction_error: float, features: list[float], learning_rate: float, cache_id: str):
         """
         updates perceptron `weights` and `bias` based on prediction `error`
 
@@ -342,7 +342,7 @@ class SimplePerceptron:
             prediction_error: float → difference between `True` and predicted label
             features: list[float] → input feature vector
             learning_rate: float → step size for `weight` updates
-            entity_id: str → recive an `ID` of a perceptron model
+            cache_id: str → recive an `ID` of a perceptron model
 
         output:
             None
@@ -353,12 +353,12 @@ class SimplePerceptron:
             b ← b + η · (y - ŷ)
             wᵢ ← wᵢ + η · (y - ŷ) xᵢ
         """
-        perceptron: object = self.perceptron_cache.get_perceptron(entity_id)
+        perceptron: object = self.perceptron_cache.get_perceptron(cache_id)
         
         bias: float = perceptron.bias + ( learning_rate * prediction_error )
         weights: list[float] = [w + learning_rate * prediction_error * x for w, x in zip(perceptron.weights, features)]
 
-        self.perceptron_cache.update_perceptron(entity_id=entity_id, weights=weights, bias=bias)
+        self.perceptron_cache.update_perceptron(cache_id=cache_id, weights=weights, bias=bias)
 
     def _zscore(self, means: list[float], standard_deviation: list[float], features: list[float]):
         """
@@ -483,7 +483,7 @@ if __name__ == "__main__":
     perceptron_cache = ModelCache(cache_length=10)
 
     # define the model metadata
-    model_info = {
+    model_metadata = {
         'model_name': "Simple Perceptron", 
         'description': "A simple perceptron trained with the gate `OR`", 
         'author': "Dylan Sutton Chavez"
@@ -493,18 +493,18 @@ if __name__ == "__main__":
     simple_perceptron = SimplePerceptron(perceptron_cache)
 
     # train the perceptron with specified parameters
-    entity_id = simple_perceptron.train(epochs=30, patience=3, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_info=model_info)
+    cache_id = simple_perceptron.train(epochs=30, patience=3, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_metadata=model_metadata)
 
     # load a saved model and make a prediction
-    prediction = simple_perceptron.inference(features=[0, 1], entity_id=entity_id)
+    prediction = simple_perceptron.inference(features=[0, 1], cache_id=cache_id)
     print(prediction)
 
     # define the fine-tuned model metadata
-    model_info = {
+    model_metadata = {
         'model_name': "Simple Perceptron Tuned", 
         'description': "Fine-tuned simple perceptron using the gate `OR`", 
         'author': "Dylan Sutton Chavez"
     }
 
     # make fine-tuning to the past model
-    simple_perceptron.fine_tuning(epochs=10, patience=2, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_path='simple-perceptron.2025_10_15.json', model_info=model_info)
+    simple_perceptron.fine_tuning(epochs=10, patience=2, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_path='simple-perceptron.2025_10_15.json', model_metadata=model_metadata)

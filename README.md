@@ -171,7 +171,7 @@ The `SimplePerceptron` module implements a complete cycle of the training and in
 perceptron_cache = ModelCache(cache_length=10)
 
 # define the model metadata
-model_info = {
+model_metadata = {
     'model_name': "Simple Perceptron", 
     'description': "A simple perceptron trained with the gate `OR`", 
     'author': "Dylan Sutton Chavez"
@@ -181,7 +181,7 @@ model_info = {
 simple_perceptron = SimplePerceptron(perceptron_cache)
 
 # train the perceptron with specified parameters
-entity_id = simple_perceptron.train(epochs=30, patience=3, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_info=model_info)
+cache_id = simple_perceptron.train(epochs=30, patience=3, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_metadata=model_metadata)
 ```
 
 3. Output (a list of `logs` _(epoch, weights, bias, error, and time)_, `early stopping`, and model root):
@@ -202,7 +202,7 @@ Early Stopping
 
 ```python
 # load a saved model and make a prediction
-prediction = simple_perceptron.inference(features=[0, 1], entity_id=entity_id)
+prediction = simple_perceptron.inference(features=[0, 1], cache_id=cache_id)
 print(prediction)
 ```
 
@@ -216,14 +216,14 @@ print(prediction)
 
 ```python
 # define the fine-tuned model metadata
-model_info = {
+model_metadata = {
     'model_name': "Simple Perceptron Tuned", 
     'description': "Fine-tuned simple perceptron using the gate `OR`", 
     'author': "Dylan Sutton Chavez"
 }
 
 # make fine-tuning to the past model
-simple_perceptron.fine_tuning(epochs=10, patience=2, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_path='simple-perceptron.2025_10_15.json', model_info=model_info)
+simple_perceptron.fine_tuning(epochs=10, patience=2, labeled_dataset_path='gate-or.json', learning_rate=0.65, model_path='simple-perceptron.2025_10_15.json', model_metadata=model_metadata)
 ```
 
 7. And we recive (output):
