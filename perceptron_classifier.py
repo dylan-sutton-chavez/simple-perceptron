@@ -108,10 +108,10 @@ class SimplePerceptron:
         stds = model.standard_deviation
 
         # make a prediction and return the result
-        y_pred = self._linear_combination(self._zscore(means, stds, features), entity_id)
-        return self._activation_step(y_pred)
+        y_pred = self._calculate_net_input(self._zscore(means, stds, features), entity_id)
+        return self._apply_step_function(y_pred)
     
-    def initialize_model(self, model_path: str):
+    def load_model_into_cache(self, model_path: str):
         """
         model_path: str → path to the saved model file
         
@@ -201,8 +201,8 @@ class SimplePerceptron:
             y_true = example['label']
 
             # make a prediction with the current model
-            net_input = self._linear_combination(features, entity_id)
-            y_pred = self._activation_step(net_input)
+            net_input = self._calculate_net_input(features, entity_id)
+            y_pred = self._apply_step_function(net_input)
 
             error = y_true - y_pred
 
@@ -314,7 +314,7 @@ class SimplePerceptron:
             dump(model_dict, model_file, indent=4) # save in `JSON` format
             print(f'Model saved as `{model_filename}`')
 
-    def _linear_combination(self, input_features: list[float], entity_id: str):
+    def _calculate_net_input(self, input_features: list[float], entity_id: str):
         """
         compute the `weighted` sum of `features` plus `bias`
 
@@ -437,7 +437,7 @@ class SimplePerceptron:
 
         return standardized_dataset, means, standard_deviation
 
-    def _activation_step(self, value: float):
+    def _apply_step_function(self, value: float):
         """
         applies step function to a given value
 
